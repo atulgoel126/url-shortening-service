@@ -46,6 +46,9 @@ class AnalyticsServiceTest {
     private AppConfig.ViewFraudPrevention viewFraudPrevention;
     
     @Mock
+    private RevenueService revenueService;
+    
+    @Mock
     private HttpServletRequest request;
     
     @InjectMocks

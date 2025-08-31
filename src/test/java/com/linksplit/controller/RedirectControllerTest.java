@@ -4,6 +4,7 @@ import com.linksplit.config.AppConfig;
 import com.linksplit.entity.Link;
 import com.linksplit.entity.User;
 import com.linksplit.service.AnalyticsService;
+import com.linksplit.service.RevenueService;
 import com.linksplit.service.UrlShorteningService;
 import com.linksplit.service.ViewLimitService;
 import jakarta.servlet.http.HttpSession;
@@ -44,6 +45,9 @@ class RedirectControllerTest {
     
     @MockBean
     private AppConfig appConfig;
+    
+    @MockBean
+    private RevenueService revenueService;
     
     private Link testLink;
     private User testUser;

@@ -32,12 +32,12 @@ public class RevenueService {
         // Get CPM rate (custom or default)
         BigDecimal cpmRate = user.getCustomCpmRate() != null 
                 ? user.getCustomCpmRate() 
-                : appConfig.getCpmRate();
+                : BigDecimal.valueOf(appConfig.getCpmRate());
         
         // Get revenue share (custom or default)
         BigDecimal revenueShare = user.getCustomRevenueShare() != null 
                 ? user.getCustomRevenueShare() 
-                : appConfig.getRevenueShare();
+                : BigDecimal.valueOf(appConfig.getRevenueShare());
         
         // Calculate: (views / 1000) * cpmRate * revenueShare
         return BigDecimal.valueOf(viewCount)
@@ -82,7 +82,7 @@ public class RevenueService {
     public BigDecimal getEffectiveCpmRate(User user) {
         return user.getCustomCpmRate() != null 
                 ? user.getCustomCpmRate() 
-                : appConfig.getCpmRate();
+                : BigDecimal.valueOf(appConfig.getCpmRate());
     }
     
     /**
@@ -91,6 +91,6 @@ public class RevenueService {
     public BigDecimal getEffectiveRevenueShare(User user) {
         return user.getCustomRevenueShare() != null 
                 ? user.getCustomRevenueShare() 
-                : appConfig.getRevenueShare();
+                : BigDecimal.valueOf(appConfig.getRevenueShare());
     }
 }

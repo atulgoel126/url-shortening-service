@@ -73,6 +73,11 @@ public class WebController {
         return "login";
     }
 
+    @GetMapping("/access-denied")
+    public String accessDenied() {
+        return "access-denied";
+    }
+    
     @GetMapping("/dashboard")
     public String dashboard(Model model, Authentication authentication,
                            @RequestParam(defaultValue = "0") int page) {

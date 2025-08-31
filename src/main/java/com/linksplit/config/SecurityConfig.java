@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -21,12 +23,21 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/", "/register", "/login", "/api/url", "/ad-page", "/css/**", "/js/**").permitAll()
-                .requestMatchers("/dashboard", "/api/user/**").authenticated()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/dashboard", "/api/user/**", "/account/**", "/payouts/**", "/analytics/**").authenticated()
                 .anyRequest().permitAll()
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/dashboard", true)
+                .successHandler((request, response, authentication) -> {
+                    boolean isAdmin = authentication.getAuthorities().stream()
+                            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                    if (isAdmin) {
+                        response.sendRedirect("/admin");
+                    } else {
+                        response.sendRedirect("/dashboard");
+                    }
+                })
                 .permitAll()
             )
             .logout(logout -> logout
@@ -36,6 +47,9 @@ public class SecurityConfig {
             )
             .csrf(csrf -> csrf
                 .ignoringRequestMatchers("/api/**")
+            )
+            .exceptionHandling(exceptions -> exceptions
+                .accessDeniedPage("/access-denied")
             );
 
         return http.build();

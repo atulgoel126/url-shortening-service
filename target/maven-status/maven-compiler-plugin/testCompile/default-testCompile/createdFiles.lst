@@ -1,8 +1,0 @@
-com/linksplit/service/UrlShorteningServiceTest.class
-com/linksplit/service/AnalyticsServiceTest.class
-com/linksplit/service/UserServiceTest.class
-com/linksplit/controller/UrlControllerTest.class
-com/linksplit/util/Base62EncoderTest.class
-com/linksplit/controller/RedirectControllerTest.class
-com/linksplit/config/TestConfig.class
-com/linksplit/integration/UrlShorteningIntegrationTest.class

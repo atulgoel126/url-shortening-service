@@ -22,10 +22,10 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
     
     List<Link> findByUser(User user);
     
-    @Query("SELECT SUM(l.viewCount) FROM Link l WHERE l.user = :user")
+    @Query("SELECT COALESCE(SUM(l.viewCount), 0) FROM Link l WHERE l.user = :user")
     Long getTotalViewsByUser(@Param("user") User user);
     
-    @Query("SELECT SUM(l.estimatedEarnings) FROM Link l WHERE l.user = :user")
+    @Query("SELECT COALESCE(SUM(l.estimatedEarnings), 0) FROM Link l WHERE l.user = :user")
     BigDecimal getTotalEarningsByUser(@Param("user") User user);
     
     @Modifying

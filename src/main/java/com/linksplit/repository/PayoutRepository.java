@@ -22,10 +22,10 @@ public interface PayoutRepository extends JpaRepository<Payout, Long> {
     
     List<Payout> findByUserAndStatusOrderByRequestedAtDesc(User user, Payout.PayoutStatus status);
     
-    @Query("SELECT SUM(p.amount) FROM Payout p WHERE p.user = :user AND p.status = :status")
+    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payout p WHERE p.user = :user AND p.status = :status")
     BigDecimal getTotalPayoutsByUserAndStatus(@Param("user") User user, @Param("status") Payout.PayoutStatus status);
     
-    @Query("SELECT SUM(p.amount) FROM Payout p WHERE p.user = :user")
+    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payout p WHERE p.user = :user")
     BigDecimal getTotalPayoutsByUser(@Param("user") User user);
     
     @Query("SELECT p FROM Payout p WHERE p.status = :status AND p.requestedAt < :before")

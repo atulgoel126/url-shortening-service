@@ -41,4 +41,6 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
     void updateEarnings(@Param("linkId") Long linkId, @Param("earnings") BigDecimal earnings);
     
     boolean existsByShortCode(String shortCode);
+    
+    long countByUser(User user);
 }

@@ -29,6 +29,10 @@ public class User implements UserDetails {
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
+    
+    @Column(name = "role", nullable = false)
+    @Builder.Default
+    private String role = "USER";
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -52,7 +56,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
     }
 
     @Override

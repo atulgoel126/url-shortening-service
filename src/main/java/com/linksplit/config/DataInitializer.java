@@ -39,10 +39,20 @@ public class DataInitializer {
             
             log.info("Creating demo user and sample data...");
             
+            // Create super admin user
+            User adminUser = User.builder()
+                    .email("admin@cli.p")
+                    .passwordHash(passwordEncoder.encode("admin@2024"))
+                    .role("ADMIN")
+                    .build();
+            adminUser = userRepository.save(adminUser);
+            log.info("Created super admin user: admin@cli.p / admin@2024");
+            
             // Create demo user
             User demoUser = User.builder()
                     .email("demo@linksplit.com")
                     .passwordHash(passwordEncoder.encode("demo123"))
+                    .role("USER")
                     .build();
             demoUser = userRepository.save(demoUser);
             log.info("Created demo user: demo@linksplit.com / demo123");

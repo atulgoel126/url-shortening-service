@@ -49,7 +49,7 @@ logging:
     org.hibernate.SQL: WARN
 
 app:
-  base-url: ${BASE_URL:http://localhost:8080}
+  base-url: ${BASE_URL:https://cli.p}
   shortcode-length: 6
   ad-display-seconds: 5
   cpm-rate: ${CPM_RATE:1.00}

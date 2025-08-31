@@ -85,13 +85,13 @@ Or using Maven:
 mvn spring-boot:run
 ```
 
-The application will start on `http://localhost:8080`
+The application will start on `http://localhost:8080` (for local development)
 
 ## Configuration
 
 Key configuration properties in `application.yml`:
 
-- `app.base-url`: Base URL for generated short links
+- `app.base-url`: Base URL for generated short links (default: https://cli.p)
 - `app.shortcode-length`: Length of generated short codes (default: 6)
 - `app.ad-display-seconds`: Countdown timer duration (default: 5)
 - `app.cpm-rate`: Cost per thousand impressions (default: 1.50)

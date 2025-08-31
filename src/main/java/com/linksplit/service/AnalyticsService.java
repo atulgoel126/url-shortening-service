@@ -26,6 +26,7 @@ public class AnalyticsService {
     private final ViewLimitService viewLimitService;
     private final GeoLocationService geoLocationService;
     private final AppConfig appConfig;
+    private final RevenueService revenueService;
 
     @Transactional
     public boolean recordView(Link link, HttpServletRequest request) {
@@ -73,7 +74,9 @@ public class AnalyticsService {
             
             // Update earnings immediately after recording view
             Long newViewCount = link.getViewCount() + 1;
-            BigDecimal newEarnings = calculateEarnings(newViewCount);
+            BigDecimal newEarnings = link.getUser() != null 
+                ? revenueService.calculateEarnings(newViewCount, link.getUser())
+                : calculateEarnings(newViewCount);
             linkRepository.updateEarnings(link.getId(), newEarnings);
             
             log.info("Recorded view for link {} from IP {}, updated earnings to {}", 

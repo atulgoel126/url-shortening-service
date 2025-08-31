@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -33,6 +34,12 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     @Builder.Default
     private String role = "USER";
+    
+    @Column(name = "custom_cpm_rate", precision = 10, scale = 4)
+    private BigDecimal customCpmRate;
+    
+    @Column(name = "custom_revenue_share", precision = 5, scale = 4)
+    private BigDecimal customRevenueShare;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

@@ -180,7 +180,7 @@
                                     <small th:unless="${payout.processedAt}">-</small>
                                 </td>
                                 <td>
-                                    <div th:if="${payout.status.name() == 'PENDING'}">
+                                    <div th:if="${payout.status?.name() == 'PENDING'}">
                                         <form th:action="@{/payouts/{id}/cancel(id=${payout.id})}" 
                                               method="post" style="display: inline;"
                                               onsubmit="return confirm('Are you sure you want to cancel this payout?');">
@@ -189,10 +189,10 @@
                                             </button>
                                         </form>
                                     </div>
-                                    <div th:if="${payout.status.name() == 'COMPLETED' and payout.transactionId}">
+                                    <div th:if="${payout.status?.name() == 'COMPLETED' and payout.transactionId != null}">
                                         <small class="text-muted">TXN: <span th:text="${payout.transactionId}"></span></small>
                                     </div>
-                                    <div th:if="${payout.status.name() == 'FAILED'}">
+                                    <div th:if="${payout.status?.name() == 'FAILED'}">
                                         <small class="text-danger" th:text="${payout.failedReason}">Failed</small>
                                     </div>
                                 </td>

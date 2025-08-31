@@ -2,17 +2,17 @@
 
 :root {
     /* Primary Colors - Modern Gradient Palette */
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
-    --primary-light: #818cf8;
-    --secondary: #ec4899;
-    --accent: #06b6d4;
+    --primary: #10b981;
+    --primary-dark: #059669;
+    --primary-light: #34d399;
+    --secondary: #06b6d4;
+    --accent: #0891b2;
     
     /* Gradient Definitions */
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --gradient-hero: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+    --gradient-primary: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    --gradient-hero: linear-gradient(135deg, #10b981 0%, #14b8a6 50%, #06b6d4 100%);
     --gradient-card: linear-gradient(145deg, #ffffff 0%, #f3f4f6 100%);
-    --gradient-success: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+    --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
     --gradient-dark: linear-gradient(135deg, #1e293b 0%, #334155 100%);
     
     /* Neutral Colors */
@@ -28,7 +28,7 @@
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-    --shadow-glow: 0 0 30px rgba(99, 102, 241, 0.3);
+    --shadow-glow: 0 0 30px rgba(16, 185, 129, 0.3);
 }
 
 * {
@@ -53,7 +53,7 @@ body {
     width: 100%;
     height: 100%;
     z-index: -1;
-    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background: linear-gradient(-45deg, #10b981, #14b8a6, #06b6d4, #0891b2);
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
     opacity: 0.05;

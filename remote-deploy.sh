@@ -109,7 +109,7 @@ spring:
     show-sql: false
 
 app:
-  base-url: https://cloven.works
+  base-url: https://cli.p
   shortcode-length: 6
   ad-display-seconds: 5
   cpm-rate: 1.50
@@ -204,7 +204,7 @@ echo -e "${GREEN}Deployment Complete!${NC}"
 echo "========================================="
 echo "Service Status: $(systemctl is-active $SERVICE_NAME)"
 echo "Application URL: http://$(curl -s ifconfig.me):8080"
-echo "Domain URL: https://cloven.works"
+echo "Domain URL: https://cli.p"
 echo ""
 echo "Useful commands:"
 echo "  View logs:        sudo journalctl -u $SERVICE_NAME -f"

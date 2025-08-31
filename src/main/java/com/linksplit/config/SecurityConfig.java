@@ -42,7 +42,11 @@ public class SecurityConfig {
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
+                .logoutRequestMatcher(new org.springframework.security.web.util.matcher.AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/")
+                .deleteCookies("JSESSIONID")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
                 .permitAll()
             )
             .csrf(csrf -> csrf

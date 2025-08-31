@@ -7,6 +7,7 @@ import com.linksplit.entity.Link;
 import com.linksplit.entity.User;
 import com.linksplit.repository.LinkRepository;
 import com.linksplit.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,6 +77,13 @@ public class WebController {
     @GetMapping("/access-denied")
     public String accessDenied() {
         return "access-denied";
+    }
+    
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        // This is handled by Spring Security, but we add this to avoid 404
+        // The actual logout is performed by Spring Security filter
+        return "redirect:/";
     }
     
     @GetMapping("/dashboard")

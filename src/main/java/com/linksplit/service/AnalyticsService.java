@@ -118,16 +118,32 @@ public class AnalyticsService {
     }
 
     public String extractIpAddress(HttpServletRequest request) {
+        // Check CF-Connecting-IP (Cloudflare)
+        String cfConnectingIp = request.getHeader("CF-Connecting-IP");
+        if (cfConnectingIp != null && !cfConnectingIp.isEmpty()) {
+            return cfConnectingIp.trim();
+        }
+        
+        // Check X-Forwarded-For (standard proxy header)
         String xForwardedFor = request.getHeader("X-Forwarded-For");
         if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+            // X-Forwarded-For can contain multiple IPs, take the first one
             return xForwardedFor.split(",")[0].trim();
         }
         
+        // Check X-Real-IP (nginx)
         String xRealIp = request.getHeader("X-Real-IP");
         if (xRealIp != null && !xRealIp.isEmpty()) {
-            return xRealIp;
+            return xRealIp.trim();
         }
         
+        // Check X-Original-Forwarded-For (some proxies)
+        String xOriginalForwardedFor = request.getHeader("X-Original-Forwarded-For");
+        if (xOriginalForwardedFor != null && !xOriginalForwardedFor.isEmpty()) {
+            return xOriginalForwardedFor.split(",")[0].trim();
+        }
+        
+        // Fallback to remote address
         return request.getRemoteAddr();
     }
     

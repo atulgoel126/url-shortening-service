@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloven.works - Premium URL Shortener & Link Monetization</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar-modern" id="navbar">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <a href="/" class="navbar-brand-modern">
+                    <i class="fas fa-link"></i>
+                    Cloven.works
+                </a>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <span th:if="${isLoggedIn}">
+                        <a href="/dashboard" class="nav-link-modern">
+                            <i class="fas fa-chart-line"></i> Dashboard
+                        </a>
+                        <a href="/logout" class="nav-link-modern">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </span>
+                    <span th:unless="${isLoggedIn}">
+                        <a href="/login" class="nav-link-modern">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                        <a href="/register" class="btn-modern btn-primary-modern">
+                            <i class="fas fa-user-plus"></i> Get Started
+                        </a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-modern">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; text-align: center; position: relative; z-index: 1;">
+            <h1 class="hero-title">
+                Shorten Links.<br>
+                <span style="background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    Earn Money.
+                </span>
+            </h1>
+            <p class="hero-subtitle">Transform your long URLs into profitable short links with our advanced monetization platform</p>
+            
+            <!-- URL Shortener Form -->
+            <div style="max-width: 700px; margin: 3rem auto;">
+                <form id="shortenForm">
+                    <div class="input-group-modern">
+                        <input type="url" 
+                               id="longUrl" 
+                               placeholder="Paste your long URL here..." 
+                               required
+                               style="padding: 1.25rem 1.5rem; font-size: 1.1rem; border-radius: 1rem 0 0 1rem;">
+                        <button type="submit" class="btn-modern btn-primary-modern" style="border-radius: 0 1rem 1rem 0; padding: 1.25rem 2rem;">
+                            <i class="fas fa-magic"></i> Shorten Now
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Result Display -->
+                <div id="result" class="alert-modern alert-success-modern" style="display: none; margin-top: 2rem;">
+                    <i class="fas fa-check-circle" style="font-size: 1.5rem;"></i>
+                    <div style="flex: 1;">
+                        <strong>Success! Your short URL is ready:</strong>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                            <input type="text" id="shortUrl" readonly style="flex: 1; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid #10b981;">
+                            <button onclick="copyToClipboard()" class="btn-modern btn-success-modern" style="padding: 0.5rem 1rem;">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="error" class="alert-modern alert-error-modern" style="display: none; margin-top: 2rem;">
+                    <i class="fas fa-exclamation-circle" style="font-size: 1.5rem;"></i>
+                    <span id="errorMessage"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section style="padding: 5rem 0; background: white;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">
+                    Why Choose 
+                    <span style="background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        Cloven.works?
+                    </span>
+                </h2>
+                <p style="color: var(--text-secondary); font-size: 1.1rem;">
+                    The most advanced URL shortening platform with built-in monetization
+                </p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3 class="feature-title">Lightning Fast</h3>
+                    <p class="feature-description">
+                        Create short links instantly with our optimized infrastructure. No delays, no hassle.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: var(--gradient-success);">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <h3 class="feature-title">Earn Revenue</h3>
+                    <p class="feature-description">
+                        Monetize every click with our competitive CPM rates and transparent earnings dashboard.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3 class="feature-title">Real-time Analytics</h3>
+                    <p class="feature-description">
+                        Track clicks, earnings, and engagement with comprehensive real-time analytics.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Secure & Reliable</h3>
+                    <p class="feature-description">
+                        Your links are protected with enterprise-grade security and 99.9% uptime guarantee.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3 class="feature-title">Global Reach</h3>
+                    <p class="feature-description">
+                        Share your links worldwide with our globally distributed infrastructure.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h3 class="feature-title">Easy Integration</h3>
+                    <p class="feature-description">
+                        Simple API and tools to integrate with your existing workflow seamlessly.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section style="padding: 5rem 0; background: var(--bg-light);">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                <div class="stats-card-modern primary" style="text-align: center;">
+                    <div class="stats-label">Links Created</div>
+                    <div class="stats-value pulse-animation">10K+</div>
+                    <i class="fas fa-link stats-icon"></i>
+                </div>
+                <div class="stats-card-modern success" style="text-align: center;">
+                    <div class="stats-label">Total Clicks</div>
+                    <div class="stats-value pulse-animation">1M+</div>
+                    <i class="fas fa-mouse-pointer stats-icon"></i>
+                </div>
+                <div class="stats-card-modern info" style="text-align: center;">
+                    <div class="stats-label">Paid Out</div>
+                    <div class="stats-value pulse-animation">$50K+</div>
+                    <i class="fas fa-wallet stats-icon"></i>
+                </div>
+                <div class="stats-card-modern" style="text-align: center; background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); color: white;">
+                    <div class="stats-label">Active Users</div>
+                    <div class="stats-value pulse-animation">5K+</div>
+                    <i class="fas fa-users stats-icon"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section style="padding: 5rem 0; background: var(--gradient-hero);">
+        <div class="container" style="max-width: 800px; margin: 0 auto; padding: 0 2rem; text-align: center; color: white;">
+            <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">
+                Ready to Start Earning?
+            </h2>
+            <p style="font-size: 1.2rem; opacity: 0.95; margin-bottom: 2rem;">
+                Join thousands of creators who are already monetizing their links
+            </p>
+            <a href="/register" class="btn-modern" style="background: white; color: var(--primary); padding: 1rem 3rem; font-size: 1.1rem;">
+                <i class="fas fa-rocket"></i> Start For Free
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="background: var(--gradient-dark); color: white; padding: 3rem 0; text-align: center;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+            <p style="opacity: 0.8; margin-bottom: 1rem;">© 2024 Cloven.works - Premium URL Shortening Service</p>
+            <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+                <a href="#" style="color: white; opacity: 0.8; text-decoration: none; transition: opacity 0.3s;">Terms</a>
+                <a href="#" style="color: white; opacity: 0.8; text-decoration: none; transition: opacity 0.3s;">Privacy</a>
+                <a href="#" style="color: white; opacity: 0.8; text-decoration: none; transition: opacity 0.3s;">Contact</a>
+                <a href="#" style="color: white; opacity: 0.8; text-decoration: none; transition: opacity 0.3s;">API</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Form submission
+        document.getElementById('shortenForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const longUrl = document.getElementById('longUrl').value;
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            
+            resultDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+            
+            // Add loading state
+            const originalButtonHTML = submitButton.innerHTML;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+            submitButton.disabled = true;
+            
+            try {
+                const response = await fetch('/api/url', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ longUrl })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && !data.error) {
+                    document.getElementById('shortUrl').value = data.shortUrl;
+                    resultDiv.style.display = 'flex';
+                    document.getElementById('longUrl').value = '';
+                } else {
+                    document.getElementById('errorMessage').textContent = data.error || 'Failed to create short URL';
+                    errorDiv.style.display = 'flex';
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = 'An error occurred. Please try again.';
+                errorDiv.style.display = 'flex';
+            } finally {
+                submitButton.innerHTML = originalButtonHTML;
+                submitButton.disabled = false;
+            }
+        });
+        
+        function copyToClipboard() {
+            const shortUrl = document.getElementById('shortUrl');
+            shortUrl.select();
+            document.execCommand('copy');
+            
+            const copyButton = event.target.closest('button');
+            const originalHTML = copyButton.innerHTML;
+            copyButton.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+                copyButton.innerHTML = originalHTML;
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

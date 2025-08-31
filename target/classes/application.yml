@@ -1,0 +1,68 @@
+spring:
+  application:
+    name: linksplit
+
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/linksplit}
+    username: ${DATABASE_USERNAME:linksplit}
+    password: ${DATABASE_PASSWORD:linksplit}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          batch_size: 20
+    show-sql: false
+    open-in-view: false
+
+  thymeleaf:
+    cache: true
+    mode: HTML
+
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=10000,expireAfterWrite=60m
+
+server:
+  port: ${SERVER_PORT:8080}
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+
+logging:
+  level:
+    root: INFO
+    com.linksplit: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN
+
+app:
+  base-url: ${BASE_URL:http://localhost:8080}
+  shortcode-length: 6
+  ad-display-seconds: 5
+  cpm-rate: ${CPM_RATE:1.00}
+  revenue-share: ${REVENUE_SHARE:0.50}
+  view-fraud-prevention:
+    enabled: true
+    rate-limits:
+      five-minutes:
+        duration-minutes: 5
+        max-views: 5
+      hourly:
+        duration-minutes: 60
+        max-views: 20
+      daily:
+        duration-minutes: 1440
+        max-views: 50

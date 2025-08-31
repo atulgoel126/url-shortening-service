@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/atulgoel/**)",
+      "Bash(mvn test:*)",
+      "Bash(mvn clean:*)",
+      "Bash(chmod:*)",
+      "Bash(brew services:*)",
+      "Bash(createdb:*)",
+      "Bash(psql:*)",
+      "Bash(dropdb:*)",
+      "Bash(curl:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "outputStyle": "default"
+}

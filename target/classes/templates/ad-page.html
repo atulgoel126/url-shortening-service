@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+        .ad-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .ad-unit {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            min-width: 320px;
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .countdown-timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #6c757d;
+        }
+        #skipButton {
+            min-width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="ad-container">
+        <div class="container text-center">
+            <h2 class="mb-4">You are being redirected to your destination...</h2>
+            
+            <!-- Rate limit warning if applicable -->
+            <div th:if="${viewBlocked}" class="alert alert-warning mb-4">
+                <strong>Rate Limit Reached!</strong>
+                <p th:text="${rateLimitMessage}"></p>
+                <small>This view will not count towards earnings.</small>
+            </div>
+            
+            <div class="ad-unit">
+                <div class="text-muted">
+                    <!-- Google AdSense Ad Unit would go here -->
+                    <p>[Advertisement Space]</p>
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                    <!-- Replace with actual AdSense code -->
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-XXXXXXXXXX"
+                         data-ad-slot="XXXXXXXXXX"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <p class="countdown-timer">Please wait <span id="countdown" th:text="${countdownSeconds}">5</span> seconds...</p>
+            </div>
+            
+            <button id="skipButton" class="btn btn-primary btn-lg" disabled>
+                Skip Ad
+            </button>
+            
+            <div class="mt-4">
+                <small class="text-muted">
+                    Your destination: <span th:text="${#strings.abbreviate(destinationUrl, 50)}"></span>
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const destinationUrl = /*[[${destinationUrl}]]*/ '';
+        const countdownSeconds = /*[[${countdownSeconds}]]*/ 5;
+        const shortCode = /*[[${shortCode}]]*/ '';
+        const sessionToken = /*[[${sessionToken}]]*/ '';
+        const viewBlocked = /*[[${viewBlocked}]]*/ false;
+        let remainingSeconds = countdownSeconds;
+        let adCompleted = false;
+        
+        const countdownElement = document.getElementById('countdown');
+        const skipButton = document.getElementById('skipButton');
+        
+        const countdownInterval = setInterval(() => {
+            remainingSeconds--;
+            countdownElement.textContent = remainingSeconds;
+            
+            if (remainingSeconds <= 0) {
+                clearInterval(countdownInterval);
+                skipButton.disabled = false;
+                skipButton.textContent = 'Continue to destination';
+                skipButton.classList.remove('btn-primary');
+                skipButton.classList.add('btn-success');
+                adCompleted = true;
+            }
+        }, 1000);
+        
+        skipButton.addEventListener('click', async () => {
+            if (!skipButton.disabled) {
+                // Only record view if ad was completed and not blocked
+                if (adCompleted && !viewBlocked) {
+                    try {
+                        const response = await fetch('/api/complete-ad', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `shortCode=${encodeURIComponent(shortCode)}&token=${encodeURIComponent(sessionToken)}`
+                        });
+                        
+                        const data = await response.json();
+                        console.log('Ad completion recorded:', data);
+                    } catch (error) {
+                        console.error('Failed to record ad completion:', error);
+                    }
+                }
+                
+                // Redirect to destination
+                window.location.href = destinationUrl;
+            }
+        });
+    </script>
+</body>
+</html>

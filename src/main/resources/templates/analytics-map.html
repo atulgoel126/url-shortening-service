@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geographic Analytics - LinkSplit</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet Heatmap CSS -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        #worldMap {
+            height: 600px;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .map-container {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .map-controls {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-width: 200px;
+        }
+        .stats-overlay {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .country-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .country-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+        .country-item:hover {
+            background: #f8f9fa;
+        }
+        .country-flag {
+            width: 24px;
+            height: 18px;
+            margin-right: 10px;
+        }
+        .metric-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+            margin: 5px;
+        }
+        .heat-legend {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .heat-gradient {
+            width: 200px;
+            height: 20px;
+            background: linear-gradient(to right, 
+                rgba(0, 0, 255, 0.1), 
+                rgba(0, 255, 0, 0.3), 
+                rgba(255, 255, 0, 0.5), 
+                rgba(255, 128, 0, 0.7), 
+                rgba(255, 0, 0, 0.9));
+            border-radius: 4px;
+        }
+        .city-marker {
+            background: rgba(102, 126, 234, 0.8);
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">LinkSplit</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+                <a class="nav-link" href="/analytics">Analytics</a>
+                <a class="nav-link active" href="/analytics/map">Map View</a>
+                <a class="nav-link" href="/logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row mb-3">
+            <div class="col-12">
+                <h2>Geographic Analytics</h2>
+                <p class="text-muted">Real-time visualization of your global audience</p>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <h3 class="text-primary" id="totalCountries">0</h3>
+                        <p class="text-muted mb-0">Countries</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <h3 class="text-success" id="totalCities">0</h3>
+                        <p class="text-muted mb-0">Cities</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <h3 class="text-info" id="totalViews">0</h3>
+                        <p class="text-muted mb-0">Total Views</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <h3 class="text-warning" id="topCountry">-</h3>
+                        <p class="text-muted mb-0">Top Country</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- World Map -->
+            <div class="col-lg-8">
+                <div class="map-container">
+                    <div id="worldMap"></div>
+                    
+                    <!-- Map Controls -->
+                    <div class="map-controls">
+                        <h6 class="mb-3">View Options</h6>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="showHeatmap" checked>
+                            <label class="form-check-label" for="showHeatmap">
+                                Heatmap
+                            </label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="showMarkers" checked>
+                            <label class="form-check-label" for="showMarkers">
+                                City Markers
+                            </label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="animatePulse" checked>
+                            <label class="form-check-label" for="animatePulse">
+                                Animations
+                            </label>
+                        </div>
+                        <hr>
+                        <select class="form-select form-select-sm" id="dateRange">
+                            <option value="7">Last 7 days</option>
+                            <option value="30" selected>Last 30 days</option>
+                            <option value="90">Last 90 days</option>
+                            <option value="365">Last year</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Heat Legend -->
+                    <div class="heat-legend">
+                        <small class="text-muted d-block mb-2">Traffic Intensity</small>
+                        <div class="heat-gradient"></div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small>Low</small>
+                            <small>High</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Country List -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white border-0 pb-0">
+                        <h5>Top Locations</h5>
+                        <ul class="nav nav-tabs nav-tabs-sm" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#countries">Countries</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#cities">Cities</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="countries">
+                                <div class="country-list" id="countryList">
+                                    <!-- Countries will be populated here -->
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="cities">
+                                <div class="country-list" id="cityList">
+                                    <!-- Cities will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    
+    <script th:inline="javascript">
+        // Initialize map
+        const map = L.map('worldMap', {
+            center: [20, 0],
+            zoom: 2,
+            minZoom: 2,
+            maxZoom: 10,
+            worldCopyJump: true
+        });
+
+        // Add tile layer (using CartoDB Positron for clean look like Firebase)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap contributors © CARTO',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+
+        let heatmapLayer = null;
+        let markersLayer = L.layerGroup().addTo(map);
+        
+        // Fetch and display map data
+        async function loadMapData() {
+            const dateRange = document.getElementById('dateRange').value;
+            
+            try {
+                const response = await fetch(`/api/analytics/map-data?days=${dateRange}`);
+                const data = await response.json();
+                
+                updateMap(data);
+                updateStatistics(data);
+                updateLocationLists(data);
+            } catch (error) {
+                console.error('Error loading map data:', error);
+            }
+        }
+        
+        function updateMap(data) {
+            // Clear existing layers
+            if (heatmapLayer) {
+                map.removeLayer(heatmapLayer);
+            }
+            markersLayer.clearLayers();
+            
+            // Prepare heatmap data
+            const heatData = [];
+            const markers = [];
+            
+            data.locations.forEach(location => {
+                if (location.latitude && location.longitude) {
+                    // Add to heatmap
+                    for (let i = 0; i < location.views; i++) {
+                        heatData.push([location.latitude, location.longitude, location.views / 100]);
+                    }
+                    
+                    // Create marker
+                    const size = Math.min(Math.max(10, Math.sqrt(location.views) * 3), 40);
+                    const marker = L.circleMarker([location.latitude, location.longitude], {
+                        radius: size,
+                        fillColor: '#667eea',
+                        color: '#fff',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.7,
+                        className: document.getElementById('animatePulse').checked ? 'pulse' : ''
+                    });
+                    
+                    // Add popup
+                    marker.bindPopup(`
+                        <strong>${location.city || 'Unknown'}, ${location.country}</strong><br>
+                        Views: ${location.views}<br>
+                        Users: ${location.uniqueUsers || location.views}
+                    `);
+                    
+                    markers.push(marker);
+                }
+            });
+            
+            // Add heatmap layer
+            if (document.getElementById('showHeatmap').checked && heatData.length > 0) {
+                heatmapLayer = L.heatLayer(heatData, {
+                    radius: 25,
+                    blur: 15,
+                    maxZoom: 10,
+                    gradient: {
+                        0.1: 'blue',
+                        0.3: 'cyan',
+                        0.5: 'lime',
+                        0.7: 'yellow',
+                        0.9: 'red'
+                    }
+                }).addTo(map);
+            }
+            
+            // Add markers
+            if (document.getElementById('showMarkers').checked) {
+                markers.forEach(marker => markersLayer.addLayer(marker));
+            }
+        }
+        
+        function updateStatistics(data) {
+            const countries = new Set(data.locations.map(l => l.country)).size;
+            const cities = new Set(data.locations.map(l => l.city).filter(c => c)).size;
+            const totalViews = data.locations.reduce((sum, l) => sum + l.views, 0);
+            
+            document.getElementById('totalCountries').textContent = countries;
+            document.getElementById('totalCities').textContent = cities;
+            document.getElementById('totalViews').textContent = totalViews.toLocaleString();
+            
+            // Find top country
+            const countryViews = {};
+            data.locations.forEach(l => {
+                countryViews[l.country] = (countryViews[l.country] || 0) + l.views;
+            });
+            
+            const topCountry = Object.entries(countryViews)
+                .sort((a, b) => b[1] - a[1])[0];
+            
+            if (topCountry) {
+                document.getElementById('topCountry').textContent = topCountry[0];
+            }
+        }
+        
+        function updateLocationLists(data) {
+            // Aggregate by country
+            const countryData = {};
+            const cityData = {};
+            
+            data.locations.forEach(location => {
+                // Country aggregation
+                if (!countryData[location.country]) {
+                    countryData[location.country] = {
+                        views: 0,
+                        cities: new Set()
+                    };
+                }
+                countryData[location.country].views += location.views;
+                if (location.city) {
+                    countryData[location.country].cities.add(location.city);
+                }
+                
+                // City aggregation
+                const cityKey = `${location.city}, ${location.country}`;
+                if (location.city) {
+                    cityData[cityKey] = (cityData[cityKey] || 0) + location.views;
+                }
+            });
+            
+            // Sort and display countries
+            const sortedCountries = Object.entries(countryData)
+                .sort((a, b) => b[1].views - a[1].views)
+                .slice(0, 20);
+            
+            const countryListHtml = sortedCountries.map(([country, data]) => `
+                <div class="country-item">
+                    <div>
+                        <strong>${country}</strong>
+                        <br>
+                        <small class="text-muted">${data.cities.size} cities</small>
+                    </div>
+                    <div class="text-end">
+                        <strong>${data.views.toLocaleString()}</strong>
+                        <br>
+                        <small class="text-muted">views</small>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('countryList').innerHTML = countryListHtml;
+            
+            // Sort and display cities
+            const sortedCities = Object.entries(cityData)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 20);
+            
+            const cityListHtml = sortedCities.map(([city, views]) => `
+                <div class="country-item">
+                    <div>
+                        <strong>${city}</strong>
+                    </div>
+                    <div class="text-end">
+                        <strong>${views.toLocaleString()}</strong>
+                        <br>
+                        <small class="text-muted">views</small>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('cityList').innerHTML = cityListHtml;
+        }
+        
+        // Event listeners
+        document.getElementById('showHeatmap').addEventListener('change', loadMapData);
+        document.getElementById('showMarkers').addEventListener('change', loadMapData);
+        document.getElementById('animatePulse').addEventListener('change', loadMapData);
+        document.getElementById('dateRange').addEventListener('change', loadMapData);
+        
+        // Initial load
+        loadMapData();
+        
+        // Refresh every 30 seconds
+        setInterval(loadMapData, 30000);
+    </script>
+</body>
+</html>

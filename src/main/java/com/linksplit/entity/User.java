@@ -28,7 +28,10 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password_hash", nullable = false)
+    @Column(name = "supabase_id", unique = true)
+    private String supabaseId;
+    
+    @Column(name = "password_hash")
     private String passwordHash;
     
     @Column(name = "role", nullable = false)
@@ -68,7 +71,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return passwordHash;
+        return passwordHash != null ? passwordHash : "";
     }
 
     @Override

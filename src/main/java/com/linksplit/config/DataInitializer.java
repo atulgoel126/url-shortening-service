@@ -41,12 +41,12 @@ public class DataInitializer {
             
             // Create super admin user
             User adminUser = User.builder()
-                    .email("admin@cli.p")
+                    .email("admin@frwrd.pro")
                     .passwordHash(passwordEncoder.encode("admin@2024"))
                     .role("ADMIN")
                     .build();
             adminUser = userRepository.save(adminUser);
-            log.info("Created super admin user: admin@cli.p / admin@2024");
+            log.info("Created super admin user: admin@frwrd.pro / admin@2024");
             
             // Create demo user
             User demoUser = User.builder()

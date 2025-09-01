@@ -47,7 +47,7 @@ public class UrlShorteningService {
     }
 
     public String getFullShortUrl(String shortCode) {
-        return appConfig.getBaseUrl() + "/" + shortCode;
+        return appConfig.getBaseUrl() + "/link/" + shortCode;
     }
 
     private String generateUniqueShortCode() {

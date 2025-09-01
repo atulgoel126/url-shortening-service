@@ -29,7 +29,7 @@ public class RedirectController {
     private final ViewLimitService viewLimitService;
     private final AppConfig appConfig;
 
-    @GetMapping("/{shortCode}")
+    @GetMapping("/link/{shortCode}")
     public String handleRedirect(@PathVariable String shortCode) {
         Optional<Link> linkOpt = urlShorteningService.getLinkByShortCode(shortCode);
         
@@ -39,6 +39,13 @@ public class RedirectController {
         }
         
         return "redirect:/ad-page?id=" + shortCode;
+    }
+    
+    // Keep legacy route for backward compatibility (optional)
+    @GetMapping("/{shortCode}")
+    public String handleLegacyRedirect(@PathVariable String shortCode) {
+        // Redirect to new format
+        return "redirect:/link/" + shortCode;
     }
 
     @GetMapping("/ad-page")

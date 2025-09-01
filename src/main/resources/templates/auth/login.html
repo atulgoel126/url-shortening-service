@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - frwrd.pro</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="/css/style.css" rel="stylesheet">
+    
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-hero);
+            padding: 2rem;
+        }
+        .auth-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        .auth-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .auth-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        .supabase-auth-ui {
+            margin-top: 1.5rem;
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+        }
+        .divider span {
+            padding: 0 1rem;
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        .loading-spinner.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">Sign in to your frwrd.pro account</p>
+            
+            <div id="loading" class="loading-spinner">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
+                <p style="margin-top: 1rem; color: var(--text-secondary);">Signing in...</p>
+            </div>
+            
+            <div id="auth-container"></div>
+            
+            <div class="divider">
+                <span>Don't have an account?</span>
+            </div>
+            
+            <a href="/auth/register" class="btn-modern btn-outline-modern" style="width: 100%; text-align: center;">
+                Create Account
+            </a>
+            
+            <p style="text-align: center; margin-top: 2rem;">
+                <a href="/" style="color: var(--text-secondary); text-decoration: none;">
+                    <i class="fas fa-arrow-left"></i> Back to Home
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://vcwireorjflemkupqacv.supabase.co';
+        const supabaseAnonKey = 'sb_publishable_Lcqp9RlUSmyKUj2UUByD0w_XMjqqdSx';
+        
+        const { createClient } = supabase;
+        const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+        
+        // Create custom auth UI
+        function createAuthUI() {
+            const container = document.getElementById('auth-container');
+            container.innerHTML = `
+                <form id="loginForm">
+                    <div class="form-group-modern" style="margin-bottom: 1.5rem;">
+                        <label for="email" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Email</label>
+                        <input type="email" 
+                               id="email" 
+                               name="email" 
+                               required
+                               placeholder="you@example.com"
+                               style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; font-size: 1rem;">
+                    </div>
+                    
+                    <div class="form-group-modern" style="margin-bottom: 1.5rem;">
+                        <label for="password" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Password</label>
+                        <input type="password" 
+                               id="password" 
+                               name="password" 
+                               required
+                               placeholder="Your password"
+                               style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; font-size: 1rem;">
+                    </div>
+                    
+                    <div id="error-message" style="display: none; color: #ef4444; margin-bottom: 1rem; padding: 0.75rem; background: #fee2e2; border-radius: 0.5rem;">
+                    </div>
+                    
+                    <button type="submit" class="btn-modern btn-primary-modern" style="width: 100%;">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </form>
+            `;
+            
+            // Add event listeners
+            document.getElementById('loginForm').addEventListener('submit', handleEmailLogin);
+        }
+        
+        // Handle email/password login
+        async function handleEmailLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-message');
+            const loadingDiv = document.getElementById('loading');
+            const authContainer = document.getElementById('auth-container');
+            
+            // Show loading
+            loadingDiv.classList.add('active');
+            authContainer.style.display = 'none';
+            errorDiv.style.display = 'none';
+            
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) throw error;
+                
+                // Store token in cookie
+                document.cookie = `sb-access-token=${data.session.access_token}; path=/; max-age=${60 * 60 * 24 * 7}`;
+                
+                // Check if user is admin and redirect accordingly
+                const userEmail = data.session.user.email;
+                if (userEmail === 'admin@frwrd.pro') {
+                    window.location.href = '/admin';
+                } else {
+                    window.location.href = '/dashboard';
+                }
+                
+            } catch (error) {
+                loadingDiv.classList.remove('active');
+                authContainer.style.display = 'block';
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = error.message || 'Failed to sign in. Please try again.';
+            }
+        }
+        
+        // Check if user is already logged in
+        async function checkAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            
+            if (session) {
+                // Store token in cookie
+                document.cookie = `sb-access-token=${session.access_token}; path=/; max-age=${60 * 60 * 24 * 7}`;
+                
+                // Check if user is admin and redirect accordingly
+                const userEmail = session.user.email;
+                if (userEmail === 'admin@frwrd.pro') {
+                    window.location.href = '/admin';
+                } else {
+                    window.location.href = '/dashboard';
+                }
+            } else {
+                // Show auth UI
+                createAuthUI();
+            }
+        }
+        
+        // Initialize on page load
+        checkAuth();
+    </script>
+</body>
+</html>

@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -38,8 +39,8 @@ public class AnalyticsController {
     @GetMapping("/analytics")
     public String showAnalytics(Model model, Authentication authentication,
                                 @RequestParam(required = false) String linkId,
-                                @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-                                @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+                                @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         
         if (authentication == null || !authentication.isAuthenticated()) {
             return "redirect:/login";
@@ -47,12 +48,9 @@ public class AnalyticsController {
         
         User user = userService.getUserByEmail(authentication.getName());
         
-        if (startDate == null) {
-            startDate = LocalDateTime.now().minusDays(30);
-        }
-        if (endDate == null) {
-            endDate = LocalDateTime.now();
-        }
+        // Convert LocalDate to LocalDateTime
+        LocalDateTime startDateTime = startDate != null ? startDate.atStartOfDay() : LocalDateTime.now().minusDays(30);
+        LocalDateTime endDateTime = endDate != null ? endDate.atTime(23, 59, 59) : LocalDateTime.now();
         
         // Check if we're viewing analytics for a specific link
         Link selectedLink = null;
@@ -66,18 +64,18 @@ public class AnalyticsController {
         AnalyticsDashboard dashboard;
         if (selectedLink != null) {
             // Get analytics for specific link
-            dashboard = analyticsService.getAnalyticsForLink(selectedLink, startDate, endDate);
+            dashboard = analyticsService.getAnalyticsForLink(selectedLink, startDateTime, endDateTime);
             model.addAttribute("selectedLink", selectedLink);
             model.addAttribute("isLinkSpecific", true);
         } else {
             // Get analytics for all user links
-            dashboard = analyticsService.getAnalyticsDashboard(user, startDate, endDate);
+            dashboard = analyticsService.getAnalyticsDashboard(user, startDateTime, endDateTime);
             model.addAttribute("isLinkSpecific", false);
         }
         
         model.addAttribute("dashboard", dashboard);
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("endDate", endDate);
+        model.addAttribute("startDate", startDateTime);
+        model.addAttribute("endDate", endDateTime);
         model.addAttribute("userLinks", linkRepository.findByUser(user));
         
         return "analytics";

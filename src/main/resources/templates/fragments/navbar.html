@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Standard Navigation Bar Fragment -->
+    <nav th:fragment="navbar(activeMenu)" class="navbar-modern" id="navbar">
+        <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <a href="/" class="navbar-brand-modern">
+                    <i class="fas fa-link"></i>
+                    <span>frwrd.pro</span>
+                </a>
+                <div class="nav-links-modern">
+                    <a href="/" class="nav-link-modern" th:classappend="${activeMenu == 'home'} ? 'active' : ''">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="/dashboard" class="nav-link-modern" th:classappend="${activeMenu == 'dashboard'} ? 'active' : ''">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
+                    <a href="/analytics" class="nav-link-modern" th:classappend="${activeMenu == 'analytics'} ? 'active' : ''">
+                        <i class="fas fa-chart-bar"></i> Analytics
+                    </a>
+                    <a href="/payouts" class="nav-link-modern" th:classappend="${activeMenu == 'payouts'} ? 'active' : ''">
+                        <i class="fas fa-wallet"></i> Payouts
+                    </a>
+                    <a href="/contact" class="nav-link-modern" th:classappend="${activeMenu == 'contact'} ? 'active' : ''">
+                        <i class="fas fa-envelope"></i> Contact
+                    </a>
+                    <a href="/account" class="nav-link-modern" th:classappend="${activeMenu == 'account'} ? 'active' : ''">
+                        <i class="fas fa-user-circle"></i> Account
+                    </a>
+                    <a href="/auth/logout" class="btn-modern btn-outline-modern">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Navigation Bar Fragment -->
+    <nav th:fragment="admin-navbar(activeMenu)" class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/admin">
+                <i class="bi bi-shield-lock"></i> Admin Panel
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a href="/admin" class="nav-link" th:classappend="${activeMenu == 'dashboard'} ? 'active' : ''">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                <a href="/admin/users" class="nav-link" th:classappend="${activeMenu == 'users'} ? 'active' : ''">
+                    <i class="bi bi-people"></i> Users
+                </a>
+                <a href="/admin/links" class="nav-link" th:classappend="${activeMenu == 'links'} ? 'active' : ''">
+                    <i class="bi bi-link-45deg"></i> Links
+                </a>
+                <div class="vr mx-2"></div>
+                <a href="/" class="btn btn-light btn-sm">
+                    <i class="bi bi-house"></i> Main Site
+                </a>
+                <a href="/auth/logout" class="btn btn-outline-light btn-sm ms-2">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Standard Page Header Fragment -->
+    <div th:fragment="page-header">
+        <!-- Animated Background -->
+        <div class="animated-bg"></div>
+        
+        <!-- Standard styles that should be on every page -->
+        <style>
+            body {
+                margin: 0;
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                background: var(--bg-primary);
+                color: var(--text-primary);
+            }
+            
+            .page-container {
+                min-height: calc(100vh - 80px);
+                padding: 2rem 0;
+            }
+            
+            .content-wrapper {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 0 2rem;
+            }
+        </style>
+    </div>
+</body>
+</html>

@@ -13,6 +13,7 @@ com/linksplit/service/UrlShorteningService.class
 com/linksplit/repository/IpViewTrackerRepository.class
 com/linksplit/entity/User.class
 com/linksplit/controller/UrlController.class
+com/linksplit/service/SupabaseAuthService.class
 com/linksplit/controller/AdminController.class
 com/linksplit/exception/GlobalExceptionHandler.class
 com/linksplit/dto/DashboardStats.class
@@ -22,12 +23,14 @@ com/linksplit/config/AppConfig.class
 com/linksplit/entity/PaymentMethod.class
 com/linksplit/controller/AccountController.class
 com/linksplit/entity/LinkView$LinkViewBuilder.class
+com/linksplit/config/SupabaseConfig.class
 com/linksplit/dto/CreateUrlRequest.class
 com/linksplit/entity/IpViewTracker$IpViewTrackerBuilder.class
 com/linksplit/entity/ClickHeatmap.class
 com/linksplit/controller/AnalyticsController.class
 com/linksplit/config/WebConfig.class
 com/linksplit/controller/RedirectController.class
+com/linksplit/controller/AuthController.class
 com/linksplit/dto/RegisterRequest$RegisterRequestBuilder.class
 com/linksplit/service/PaymentService.class
 com/linksplit/dto/analytics/TimeAnalytics$TimeAnalyticsBuilder.class
@@ -70,10 +73,12 @@ com/linksplit/dto/analytics/OverviewMetrics.class
 com/linksplit/entity/Payout.class
 com/linksplit/dto/LoginRequest$LoginRequestBuilder.class
 com/linksplit/repository/LinkViewRepository.class
+com/linksplit/controller/ContactController.class
 com/linksplit/controller/AnalyticsController$LocationData.class
 com/linksplit/dto/analytics/TrafficSource.class
 com/linksplit/entity/PaymentMethod$PaymentMethodBuilder.class
 com/linksplit/LinkSplitApplication.class
+com/linksplit/security/SupabaseJwtAuthenticationFilter.class
 com/linksplit/entity/Payout$PayoutStatus.class
 com/linksplit/util/Base62Encoder.class
 com/linksplit/dto/analytics/TimeAnalytics.class

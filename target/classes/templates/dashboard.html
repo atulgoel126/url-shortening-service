@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - cli.p</title>
+    <title>Dashboard - frwrd.pro</title>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -15,6 +15,9 @@
     <link href="/css/style.css" rel="stylesheet">
     
     <style>
+        body {
+            margin: 0;
+        }
         .dashboard-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -78,36 +81,7 @@
     <div class="animated-bg"></div>
     
     <!-- Navigation -->
-    <nav class="navbar-modern" id="navbar">
-        <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <a href="/" class="navbar-brand-modern">
-                    <i class="fas fa-link"></i>
-                    cli.p
-                </a>
-                <div style="display: flex; gap: 1rem; align-items: center;">
-                    <a href="/" class="nav-link-modern">
-                        <i class="fas fa-home"></i> Home
-                    </a>
-                    <a href="/dashboard" class="nav-link-modern active">
-                        <i class="fas fa-chart-line"></i> Dashboard
-                    </a>
-                    <a href="/analytics" class="nav-link-modern">
-                        <i class="fas fa-chart-bar"></i> Analytics
-                    </a>
-                    <a href="/payouts" class="nav-link-modern">
-                        <i class="fas fa-wallet"></i> Payouts
-                    </a>
-                    <a href="/account" class="nav-link-modern">
-                        <i class="fas fa-user-circle"></i> Account
-                    </a>
-                    <a href="/logout" class="btn-modern btn-outline-modern">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <div th:replace="~{fragments/navbar :: navbar('dashboard')}"></div>
 
     <div class="dashboard-container">
         <!-- Dashboard Header -->
@@ -251,7 +225,7 @@
                             <td>
                                 <div class="link-actions">
                                     <button class="copy-button" 
-                                            th:attr="data-url=${@appConfig.baseUrl + '/' + link.shortCode}"
+                                            th:attr="data-url=${@appConfig.baseUrl + '/link/' + link.shortCode}"
                                             onclick="copyLink(this)"
                                             type="button">
                                         <i class="fas fa-copy"></i>

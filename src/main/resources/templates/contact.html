@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - frwrd.pro</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="/css/style.css" rel="stylesheet">
+    
+    <style>
+        body {
+            margin: 0;
+        }
+        .contact-container {
+            min-height: calc(100vh - 80px);
+            background: var(--gradient-hero);
+            padding-top: 2rem;
+        }
+        .contact-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .contact-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .contact-title {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        .contact-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+        }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .contact-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
+        }
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+        .contact-method {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        .contact-info {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+        .contact-link:hover {
+            transform: scale(1.05);
+        }
+        .faq-section {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+        .faq-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .faq-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        .faq-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .faq-answer {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    
+    <!-- Navigation -->
+    <div th:replace="~{fragments/navbar :: navbar('contact')}"></div>
+
+    <div class="contact-container">
+        <div class="contact-content">
+            <div class="contact-header">
+                <h1 class="contact-title">Get in Touch</h1>
+                <p class="contact-subtitle">We're here to help you maximize your earnings</p>
+            </div>
+
+            <div class="contact-grid">
+                <!-- Email Card -->
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3 class="contact-method">Email Support</h3>
+                    <p class="contact-info">
+                        Get detailed assistance via email. We typically respond within 24 hours.
+                    </p>
+                    <a href="mailto:project.cworks@gmail.com" class="contact-link">
+                        <i class="fas fa-paper-plane"></i>
+                        Send Email
+                    </a>
+                    <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                        project.cworks@gmail.com
+                    </p>
+                </div>
+
+                <!-- WhatsApp Card -->
+                <div class="contact-card">
+                    <div class="contact-icon" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <h3 class="contact-method">WhatsApp Support</h3>
+                    <p class="contact-info">
+                        Need quick help? Message us on WhatsApp for instant support.
+                    </p>
+                    <a href="https://wa.me/14126297281" target="_blank" class="contact-link" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);">
+                        <i class="fab fa-whatsapp"></i>
+                        Chat on WhatsApp
+                    </a>
+                    <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                        +1-412-629-7281
+                    </p>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="faq-section">
+                <h2 class="faq-title">Frequently Asked Questions</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">What are your support hours?</div>
+                    <div class="faq-answer">
+                        Our email support is available 24/7. WhatsApp support is typically available from 9 AM to 9 PM IST, 
+                        but feel free to leave a message anytime and we'll respond as soon as possible.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">How quickly can I expect a response?</div>
+                    <div class="faq-answer">
+                        Email responses are typically within 24 hours. WhatsApp messages are usually answered within 
+                        a few hours during business hours.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">What should I include in my support request?</div>
+                    <div class="faq-answer">
+                        Please include your registered email address, a clear description of your issue or question, 
+                        and any relevant screenshots or link codes if applicable.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">Can I schedule a call?</div>
+                    <div class="faq-answer">
+                        For complex issues or partnership inquiries, we can arrange a call. Please send us an email 
+                        with your preferred time slots and we'll coordinate accordingly.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">Do you provide technical integration support?</div>
+                    <div class="faq-answer">
+                        Yes! If you need help integrating our links into your platform or have API-related questions, 
+                        our technical team is ready to assist you.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -33,7 +31,6 @@ import java.math.BigDecimal;
 public class WebController {
     private final UserService userService;
     private final LinkRepository linkRepository;
-    private final AuthenticationManager authenticationManager;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -44,34 +41,15 @@ public class WebController {
         return "index";
     }
 
+    // Legacy registration and login methods - now handled by Supabase
     @GetMapping("/register")
-    public String showRegistrationForm(Model model) {
-        model.addAttribute("registerRequest", new RegisterRequest());
-        return "register";
-    }
-
-    @PostMapping("/register")
-    public String registerUser(@Valid @ModelAttribute RegisterRequest request,
-                              BindingResult bindingResult,
-                              Model model) {
-        if (bindingResult.hasErrors()) {
-            return "register";
-        }
-
-        try {
-            userService.registerUser(request.getEmail(), request.getPassword());
-            model.addAttribute("message", "Registration successful! Please log in.");
-            return "login";
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return "register";
-        }
+    public String showRegistrationForm() {
+        return "redirect:/auth/register";
     }
 
     @GetMapping("/login")
-    public String showLoginForm(Model model) {
-        model.addAttribute("loginRequest", new LoginRequest());
-        return "login";
+    public String showLoginForm() {
+        return "redirect:/auth/login";
     }
 
     @GetMapping("/access-denied")
@@ -80,20 +58,23 @@ public class WebController {
     }
     
     @GetMapping("/logout")
-    public String logout(HttpServletRequest request) {
-        // This is handled by Spring Security, but we add this to avoid 404
-        // The actual logout is performed by Spring Security filter
-        return "redirect:/";
+    public String logout() {
+        return "redirect:/auth/logout";
     }
     
     @GetMapping("/dashboard")
     public String dashboard(Model model, Authentication authentication,
                            @RequestParam(defaultValue = "0") int page) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            return "redirect:/login";
+            return "redirect:/auth/login";
         }
 
         User user = userService.getUserByEmail(authentication.getName());
+        
+        // Redirect admin users to admin dashboard
+        if ("ADMIN".equals(user.getRole())) {
+            return "redirect:/admin";
+        }
         
         Page<Link> userLinks = linkRepository.findByUserOrderByCreatedAtDesc(
             user, PageRequest.of(page, 10)

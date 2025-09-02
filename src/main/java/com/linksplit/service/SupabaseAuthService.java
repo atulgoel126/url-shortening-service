@@ -64,6 +64,10 @@ public class SupabaseAuthService {
             }
             
             return Optional.empty();
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            log.warn("JWT token has expired at: {} (Current time: {})", 
+                     e.getClaims().getExpiration(), new java.util.Date());
+            return Optional.empty();
         } catch (Exception e) {
             log.error("Failed to validate JWT token: {}", e.getMessage());
             return Optional.empty();
@@ -88,6 +92,7 @@ public class SupabaseAuthService {
         int i = token.lastIndexOf('.');
         String withoutSignature = token.substring(0, i+1);
         Claims claims = Jwts.parserBuilder()
+                .setAllowedClockSkewSeconds(60) // Allow 1 minute of clock skew
                 .build()
                 .parseClaimsJwt(withoutSignature)
                 .getBody();
@@ -157,12 +162,6 @@ public class SupabaseAuthService {
                 .password("") // No password needed for JWT auth
                 .authorities(authorities)
                 .build();
-    }
-    
-    private String getJwtSecret() {
-        // Get JWT secret from configuration
-        // This should be set via SUPABASE_JWT_SECRET environment variable
-        return supabaseConfig.getJwtSecret();
     }
     
     /**

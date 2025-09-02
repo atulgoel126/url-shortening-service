@@ -44,18 +44,30 @@ public class DataInitializer {
                     .email("admin@frwrd.pro")
                     .passwordHash(passwordEncoder.encode("admin@2024"))
                     .role("ADMIN")
+                    .supabaseId("admin-supabase-id") // Placeholder Supabase ID
                     .build();
             adminUser = userRepository.save(adminUser);
             log.info("Created super admin user: admin@frwrd.pro / admin@2024");
             
-            // Create demo user
+            // Create demo user (this will match the existing Supabase auth user)
             User demoUser = User.builder()
                     .email("demo@linksplit.com")
                     .passwordHash(passwordEncoder.encode("demo123"))
                     .role("USER")
+                    .supabaseId("f4b47c51-2f80-492e-a8fb-c796b7c9a5e8") // Actual Supabase ID from logs
                     .build();
             demoUser = userRepository.save(demoUser);
             log.info("Created demo user: demo@linksplit.com / demo123");
+            
+            // Create test user
+            User testUser = User.builder()
+                    .email("test@frwrd.pro")
+                    .passwordHash(passwordEncoder.encode("test123"))
+                    .role("USER")
+                    .supabaseId("test-supabase-id") // Placeholder Supabase ID
+                    .build();
+            testUser = userRepository.save(testUser);
+            log.info("Created test user: test@frwrd.pro / test123");
             
             // Add payment methods
             PaymentMethod upi1 = PaymentMethod.builder()
@@ -78,6 +90,18 @@ public class DataInitializer {
                     .build();
             paymentMethodRepository.save(upi2);
             log.info("Added payment methods for demo user");
+            
+            // Add payment methods for test user
+            PaymentMethod testUpi = PaymentMethod.builder()
+                    .user(testUser)
+                    .paymentType(PaymentMethod.PaymentType.UPI)
+                    .upiId("test@googlepay")
+                    .accountHolderName("Test User")
+                    .isPrimary(true)
+                    .isVerified(true)
+                    .build();
+            paymentMethodRepository.save(testUpi);
+            log.info("Added payment methods for test user");
             
             // Create sample links with various stats
             String[] sampleUrls = {
@@ -168,30 +192,10 @@ public class DataInitializer {
             
             log.info("Created sample payout history");
             
-            // Create another test user
-            User testUser = User.builder()
-                    .email("test@linksplit.com")
-                    .passwordHash(passwordEncoder.encode("test123"))
-                    .build();
-            userRepository.save(testUser);
-            
-            // Add payment method for test user
-            PaymentMethod testUpi = PaymentMethod.builder()
-                    .user(testUser)
-                    .paymentType(PaymentMethod.PaymentType.UPI)
-                    .upiId("test@googlepay")
-                    .accountHolderName("Test User")
-                    .isPrimary(true)
-                    .isVerified(true)
-                    .build();
-            paymentMethodRepository.save(testUpi);
-            
-            log.info("Created test user: test@linksplit.com / test123");
-            
             log.info("==============================================");
             log.info("Demo data initialization complete!");
             log.info("Demo User: demo@linksplit.com / demo123");
-            log.info("Test User: test@linksplit.com / test123");
+            log.info("Test User: test@frwrd.pro / test123");
             log.info("==============================================");
         };
     }

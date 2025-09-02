@@ -15,136 +15,90 @@
     <link href="/css/style.css" rel="stylesheet">
     
     <style>
-        /* Default desktop styles */
-        .nav-links {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-        
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0.5rem;
-        }
-        
-        /* Mobile-first responsive design */
-        @media screen and (max-width: 768px) {
-            .container {
-                padding: 0 1rem !important;
-                max-width: 100% !important;
+        /* Clean navbar styles */
+        @media (min-width: 769px) {
+            /* Desktop styles */
+            .mobile-menu-toggle {
+                display: none !important;
             }
             
-            .navbar-modern .container {
-                padding: 0 1rem;
-            }
-            
-            .mobile-menu-btn {
-                display: block !important;
-            }
-            
-            .nav-links {
-                position: fixed !important;
-                top: 70px;
-                left: -100% !important;
-                width: 100% !important;
-                height: calc(100vh - 70px) !important;
-                background: rgba(102, 126, 234, 0.95) !important;
-                backdrop-filter: blur(10px);
+            .nav-menu {
                 display: flex !important;
-                flex-direction: column !important;
-                justify-content: flex-start !important;
-                align-items: center !important;
-                padding-top: 2rem !important;
-                transition: all 0.3s ease !important;
-                z-index: 1000 !important;
-                gap: 0 !important;
+                gap: 1rem;
+                align-items: center;
+                position: static !important;
+                width: auto !important;
+                height: auto !important;
+                background: transparent !important;
+                padding: 0 !important;
+                flex-direction: row !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            /* Mobile styles */
+            .mobile-menu-toggle {
+                display: block !important;
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1.5rem;
+                cursor: pointer;
+                padding: 0.5rem;
+                z-index: 1001;
             }
             
-            .nav-links.active {
-                left: 0 !important;
+            .nav-menu {
+                display: none !important;
+                position: fixed !important;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 5rem 2rem 2rem 2rem;
+                flex-direction: column;
+                gap: 1.5rem;
+                z-index: 999;
             }
             
-            .nav-links span {
+            .nav-menu.mobile-active {
+                display: flex !important;
+            }
+            
+            .nav-menu span {
                 display: flex;
                 flex-direction: column;
-                align-items: center;
+                width: 100%;
                 gap: 1rem;
-                width: 80%;
             }
             
-            .nav-links .nav-link-modern,
-            .nav-links .btn-modern {
+            .nav-menu .nav-link-modern,
+            .nav-menu .btn-modern {
+                display: block;
                 width: 100%;
                 text-align: center;
                 padding: 1rem;
-                margin: 0.5rem 0;
-                border-radius: 0.5rem;
-                background: rgba(255, 255, 255, 0.1);
-                display: block;
+                font-size: 1.1rem;
             }
             
-            .navbar-modern .navbar-brand-modern {
-                font-size: 1.2rem;
+            /* Mobile general styles */
+            .container {
+                padding: 0 1rem !important;
             }
             
             .hero-section h1 {
                 font-size: 2rem !important;
-                line-height: 1.2;
             }
             
             .hero-section .hero-subtitle {
                 font-size: 1rem !important;
             }
             
-            .url-form {
-                flex-direction: column !important;
-                gap: 1rem;
-            }
-            
-            .url-form input {
-                width: 100% !important;
-                margin-bottom: 1rem;
-            }
-            
-            .url-form button {
-                width: 100% !important;
-            }
-            
-            .features-grid {
-                grid-template-columns: 1fr !important;
-                gap: 1rem;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr !important;
-                gap: 1rem;
-            }
-            
+            .features-grid,
+            .stats-grid,
             .pricing-grid {
                 grid-template-columns: 1fr !important;
-                gap: 1rem;
-            }
-        }
-        
-        
-        @media screen and (max-width: 480px) {
-            .hero-section h1 {
-                font-size: 1.8rem !important;
-            }
-            
-            .navbar-modern div[style*="display: flex"] div {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            .btn-modern {
-                font-size: 0.9rem;
-                padding: 0.7rem 1.2rem;
             }
         }
     </style>
@@ -154,7 +108,7 @@
     <div class="animated-bg"></div>
     
     <!-- Navigation -->
-    <nav class="navbar-modern" id="navbar">
+    <nav class="navbar-modern">
         <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <a href="/" class="navbar-brand-modern">
@@ -162,13 +116,13 @@
                     frwrd.pro
                 </a>
                 
-                <!-- Mobile menu button -->
-                <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">
-                    <i class="fas fa-bars"></i>
+                <!-- Mobile menu toggle -->
+                <button class="mobile-menu-toggle" onclick="toggleMenu()">
+                    <i class="fas fa-bars" id="menu-icon"></i>
                 </button>
                 
-                <!-- Navigation links -->
-                <div class="nav-links" id="navLinks">
+                <!-- Navigation menu -->
+                <div class="nav-menu" id="nav-menu">
                     <span th:if="${isLoggedIn}">
                         <a href="/dashboard" class="nav-link-modern">
                             <i class="fas fa-chart-line"></i> Dashboard
@@ -442,34 +396,19 @@
             }, 2000);
         }
         
-        // Mobile menu functionality
-        function toggleMobileMenu() {
-            const navLinks = document.getElementById('navLinks');
-            const menuBtn = document.getElementById('mobileMenuBtn');
+        // Simple mobile menu toggle
+        function toggleMenu() {
+            const navMenu = document.getElementById('nav-menu');
+            const menuIcon = document.getElementById('menu-icon');
             
-            if (navLinks.classList.contains('active')) {
-                navLinks.classList.remove('active');
-                menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            if (navMenu.classList.contains('mobile-active')) {
+                navMenu.classList.remove('mobile-active');
+                menuIcon.className = 'fas fa-bars';
             } else {
-                navLinks.classList.add('active');
-                menuBtn.innerHTML = '<i class="fas fa-times"></i>';
+                navMenu.classList.add('mobile-active');
+                menuIcon.className = 'fas fa-times';
             }
         }
-        
-        // Close mobile menu when clicking on a link
-        document.addEventListener('DOMContentLoaded', function() {
-            const navLinks = document.querySelectorAll('.nav-link-modern, .btn-modern');
-            navLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    const navLinksContainer = document.getElementById('navLinks');
-                    const menuBtn = document.getElementById('mobileMenuBtn');
-                    if (navLinksContainer.classList.contains('active')) {
-                        navLinksContainer.classList.remove('active');
-                        menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-                    }
-                });
-            });
-        });
     </script>
 </body>
 </html>

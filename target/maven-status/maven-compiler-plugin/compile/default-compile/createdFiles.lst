@@ -16,6 +16,7 @@ com/linksplit/controller/UrlController.class
 com/linksplit/service/SupabaseAuthService.class
 com/linksplit/controller/AdminController.class
 com/linksplit/exception/GlobalExceptionHandler.class
+com/linksplit/config/SupabaseConfig$Jwks$PublicKey.class
 com/linksplit/dto/DashboardStats.class
 com/linksplit/dto/analytics/TrafficSource$TrafficSourceBuilder.class
 com/linksplit/dto/RegisterRequest.class
@@ -23,6 +24,7 @@ com/linksplit/config/AppConfig.class
 com/linksplit/entity/PaymentMethod.class
 com/linksplit/controller/AccountController.class
 com/linksplit/entity/LinkView$LinkViewBuilder.class
+com/linksplit/config/SupabaseConfig$Jwks.class
 com/linksplit/config/SupabaseConfig.class
 com/linksplit/dto/CreateUrlRequest.class
 com/linksplit/entity/IpViewTracker$IpViewTrackerBuilder.class

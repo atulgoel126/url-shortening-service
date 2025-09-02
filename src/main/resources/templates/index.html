@@ -13,6 +13,141 @@
     
     <!-- Custom CSS -->
     <link href="/css/style.css" rel="stylesheet">
+    
+    <style>
+        /* Default desktop styles */
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        
+        /* Mobile-first responsive design */
+        @media screen and (max-width: 768px) {
+            .container {
+                padding: 0 1rem !important;
+                max-width: 100% !important;
+            }
+            
+            .navbar-modern .container {
+                padding: 0 1rem;
+            }
+            
+            .mobile-menu-btn {
+                display: block !important;
+            }
+            
+            .nav-links {
+                position: fixed !important;
+                top: 70px;
+                left: -100% !important;
+                width: 100% !important;
+                height: calc(100vh - 70px) !important;
+                background: rgba(102, 126, 234, 0.95) !important;
+                backdrop-filter: blur(10px);
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: flex-start !important;
+                align-items: center !important;
+                padding-top: 2rem !important;
+                transition: all 0.3s ease !important;
+                z-index: 1000 !important;
+                gap: 0 !important;
+            }
+            
+            .nav-links.active {
+                left: 0 !important;
+            }
+            
+            .nav-links span {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+                width: 80%;
+            }
+            
+            .nav-links .nav-link-modern,
+            .nav-links .btn-modern {
+                width: 100%;
+                text-align: center;
+                padding: 1rem;
+                margin: 0.5rem 0;
+                border-radius: 0.5rem;
+                background: rgba(255, 255, 255, 0.1);
+                display: block;
+            }
+            
+            .navbar-modern .navbar-brand-modern {
+                font-size: 1.2rem;
+            }
+            
+            .hero-section h1 {
+                font-size: 2rem !important;
+                line-height: 1.2;
+            }
+            
+            .hero-section .hero-subtitle {
+                font-size: 1rem !important;
+            }
+            
+            .url-form {
+                flex-direction: column !important;
+                gap: 1rem;
+            }
+            
+            .url-form input {
+                width: 100% !important;
+                margin-bottom: 1rem;
+            }
+            
+            .url-form button {
+                width: 100% !important;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr !important;
+                gap: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr !important;
+                gap: 1rem;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr !important;
+                gap: 1rem;
+            }
+        }
+        
+        
+        @media screen and (max-width: 480px) {
+            .hero-section h1 {
+                font-size: 1.8rem !important;
+            }
+            
+            .navbar-modern div[style*="display: flex"] div {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .btn-modern {
+                font-size: 0.9rem;
+                padding: 0.7rem 1.2rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Animated Background -->
@@ -26,7 +161,14 @@
                     <i class="fas fa-link"></i>
                     frwrd.pro
                 </a>
-                <div style="display: flex; gap: 1rem; align-items: center;">
+                
+                <!-- Mobile menu button -->
+                <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <!-- Navigation links -->
+                <div class="nav-links" id="navLinks">
                     <span th:if="${isLoggedIn}">
                         <a href="/dashboard" class="nav-link-modern">
                             <i class="fas fa-chart-line"></i> Dashboard
@@ -299,6 +441,35 @@
                 copyButton.innerHTML = originalHTML;
             }, 2000);
         }
+        
+        // Mobile menu functionality
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            const menuBtn = document.getElementById('mobileMenuBtn');
+            
+            if (navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+                menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            } else {
+                navLinks.classList.add('active');
+                menuBtn.innerHTML = '<i class="fas fa-times"></i>';
+            }
+        }
+        
+        // Close mobile menu when clicking on a link
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link-modern, .btn-modern');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    const navLinksContainer = document.getElementById('navLinks');
+                    const menuBtn = document.getElementById('mobileMenuBtn');
+                    if (navLinksContainer.classList.contains('active')) {
+                        navLinksContainer.classList.remove('active');
+                        menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>

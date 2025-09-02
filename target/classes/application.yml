@@ -3,9 +3,9 @@ spring:
     name: linksplit
 
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/linksplit}
-    username: ${DATABASE_USERNAME:linksplit}
-    password: ${DATABASE_PASSWORD:your_secure_password}
+    url: ${DATABASE_URL:jdbc:postgresql://db.vcwireorjflemkupqacv.supabase.co:5432/postgres?user=postgres&password=/9i36X-E.C6JPNy}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:/9i36X-E.C6JPNy}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -16,10 +16,9 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         jdbc:
           batch_size: 20
@@ -69,5 +68,16 @@ app:
 
 supabase:
   url: ${SUPABASE_URL:https://vcwireorjflemkupqacv.supabase.co}
-  anon-key: ${SUPABASE_ANON_KEY:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjd2lyZW9yamZsZW1rdXBxYWN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3MDgxMjUsImV4cCI6MjA3MjI4NDEyNX0.KX1Wm_YfOf8LJkYa8e8rQmt4_mJyep4aDyswzYmpYEE}
-  jwt-secret: ${SUPABASE_JWT_SECRET:}
+  publishable-key: sb_publishable_Lcqp9RlUSmyKUj2UUByD0w_XMjqqdSx
+  secret-key: sb_secret_mmph-Y5jyH6FwDajE_OUSQ_i11ya8DA
+  jwks:
+    discovery-url: https://vcwireorjflemkupqacv.supabase.co/auth/v1/.well-known/jwks.json
+    key-id: efee2fc1-60a4-4411-ab59-6bc7a7b99e70
+    public-key:
+      x: DRhskqQNxJpUCcO9FOJBbqMkBVOfpOoR_b3v7HBSn3o
+      y: COKdHm_5vvIi-FEnT31mwfp9ZgCBc9hcPwtY28Fiu9U
+      alg: ES256
+      crv: P-256
+      ext: true
+      kid: efee2fc1-60a4-4411-ab59-6bc7a7b99e70
+      kty: EC

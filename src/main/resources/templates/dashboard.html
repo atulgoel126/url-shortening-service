@@ -74,6 +74,92 @@
             background: var(--primary);
             color: white;
         }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1rem;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+            
+            .welcome-message {
+                font-size: 1.5rem;
+            }
+            
+            .quick-actions {
+                justify-content: center;
+            }
+            
+            .input-group-modern {
+                flex-direction: column !important;
+                gap: 1rem;
+            }
+            
+            .input-group-modern input {
+                width: 100% !important;
+            }
+            
+            .input-group-modern button {
+                width: 100% !important;
+            }
+            
+            .table-modern {
+                overflow-x: auto;
+            }
+            
+            .table-modern table {
+                min-width: 600px;
+            }
+            
+            .link-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+            
+            .link-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+            
+            /* Hide less important columns on mobile */
+            .table-modern th:nth-child(4),
+            .table-modern td:nth-child(4),
+            .table-modern th:nth-child(6),
+            .table-modern td:nth-child(6) {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .dashboard-container {
+                padding: 0.5rem;
+            }
+            
+            .welcome-message {
+                font-size: 1.2rem;
+            }
+            
+            .stats-card-modern {
+                padding: 1rem;
+            }
+            
+            .stats-value {
+                font-size: 1.5rem;
+            }
+            
+            /* Hide destination column on very small screens */
+            .table-modern th:nth-child(2),
+            .table-modern td:nth-child(2) {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>

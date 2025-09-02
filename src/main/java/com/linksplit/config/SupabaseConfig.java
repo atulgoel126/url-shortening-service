@@ -9,6 +9,25 @@ import lombok.Data;
 @Data
 public class SupabaseConfig {
     private String url = "https://vcwireorjflemkupqacv.supabase.co";
-    private String anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjd2lyZW9yamZsZW1rdXBxYWN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3MDgxMjUsImV4cCI6MjA3MjI4NDEyNX0.KX1Wm_YfOf8LJkYa8e8rQmt4_mJyep4aDyswzYmpYEE";
-    private String jwtSecret;
+    private String publishableKey;
+    private String secretKey;
+    private Jwks jwks;
+    
+    @Data
+    public static class Jwks {
+        private String discoveryUrl;
+        private String keyId;
+        private PublicKey publicKey;
+        
+        @Data
+        public static class PublicKey {
+            private String x;
+            private String y;
+            private String alg;
+            private String crv;
+            private boolean ext;
+            private String kid;
+            private String kty;
+        }
+    }
 }

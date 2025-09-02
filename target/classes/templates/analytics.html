@@ -287,7 +287,8 @@
             </div>
         </div>
 
-        <!-- Heatmap Section -->
+        <!-- Heatmap Section - Temporarily Commented Out -->
+        <!--
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card analytics-card">
@@ -302,6 +303,7 @@
                                     <option value="">Select a link to view heatmap</option>
                                     <option th:each="link : ${userLinks}" 
                                             th:value="${link.shortCode}" 
+                                            th:selected="${selectedLink != null && selectedLink.shortCode == link.shortCode}"
                                             th:text="${link.shortCode + ' - ' + link.longUrl}">Link</option>
                                 </select>
                             </div>
@@ -318,6 +320,7 @@
                 </div>
             </div>
         </div>
+        -->
     </div>
 
     <script th:inline="javascript">
@@ -495,24 +498,34 @@
             });
             
             // Transform click data for heatmap
-            const points = clickData.map(click => ({
-                x: Math.min(click.xCoordinate || 0, 1200),
-                y: Math.min(click.yCoordinate || 0, 400),
-                value: 1
-            }));
+            const containerWidth = canvas.offsetWidth || 800;
+            const containerHeight = 400;
             
-            // Add some sample data if needed for demo
-            if (points.length < 5) {
-                // Add some demo points for visualization
-                const demoPoints = [
-                    {x: 100, y: 100, value: 1},
-                    {x: 200, y: 150, value: 2},
-                    {x: 300, y: 200, value: 1},
-                    {x: 400, y: 180, value: 3},
-                    {x: 500, y: 250, value: 2}
-                ];
-                points.push(...demoPoints);
-            }
+            const points = clickData.map(click => {
+                // Scale coordinates to fit the display container
+                let x = click.xCoordinate || 0;
+                let y = click.yCoordinate || 0;
+                
+                // If coordinates seem to be from a larger viewport, scale them down
+                if (click.viewportWidth && click.viewportWidth > containerWidth) {
+                    x = (x / click.viewportWidth) * containerWidth;
+                }
+                if (click.viewportHeight && click.viewportHeight > containerHeight) {
+                    y = (y / click.viewportHeight) * containerHeight;
+                }
+                
+                // Ensure coordinates are within bounds
+                x = Math.max(0, Math.min(x, containerWidth));
+                y = Math.max(0, Math.min(y, containerHeight));
+                
+                return {
+                    x: Math.round(x),
+                    y: Math.round(y),
+                    value: 1
+                };
+            });
+            
+            console.log('Rendering heatmap with points:', points);
             
             heatmapInstance.setData({
                 max: Math.max(5, points.length / 2),
@@ -522,9 +535,20 @@
             // Add info about the heatmap
             const info = document.createElement('div');
             info.className = 'text-center mt-3';
-            info.innerHTML = `<small class="text-muted">${clickData.length} clicks recorded</small>`;
+            info.innerHTML = `<small class="text-muted">${clickData.length} real clicks recorded (no demo data)</small>`;
             container.appendChild(info);
         }
+        
+        // Auto-load heatmap when viewing specific link analytics
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLinkSpecific = /*[[${isLinkSpecific}]]*/ false;
+            if (isLinkSpecific) {
+                // Auto-load the heatmap for the selected link
+                setTimeout(() => {
+                    loadHeatmap();
+                }, 500);
+            }
+        });
     </script>
 </body>
 </html>

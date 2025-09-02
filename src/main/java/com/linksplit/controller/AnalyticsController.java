@@ -52,6 +52,8 @@ public class AnalyticsController {
         LocalDateTime startDateTime = startDate != null ? startDate.atStartOfDay() : LocalDateTime.now().minusDays(30);
         LocalDateTime endDateTime = endDate != null ? endDate.atTime(23, 59, 59) : LocalDateTime.now();
         
+        log.info("Analytics requested for user: {}, period: {} to {}", user.getEmail(), startDateTime, endDateTime);
+        
         // Check if we're viewing analytics for a specific link
         Link selectedLink = null;
         if (linkId != null && !linkId.isEmpty()) {
@@ -84,6 +86,7 @@ public class AnalyticsController {
     @PostMapping("/api/analytics/heatmap")
     @ResponseBody
     public ResponseEntity<?> recordHeatmapClick(@RequestBody Map<String, Object> clickData) {
+        log.info("Received heatmap click data: {}", clickData);
         try {
             String shortCode = (String) clickData.get("shortCode");
             String sessionId = (String) clickData.get("sessionId");
@@ -145,6 +148,9 @@ public class AnalyticsController {
         
         List<ClickHeatmap> heatmapData = heatmapRepository.findByLinkAndClickedAtBetween(
                 linkOpt.get(), startDate, endDate);
+        
+        log.info("Returning {} heatmap data points for link {} between {} and {}", 
+                heatmapData.size(), shortCode, startDate, endDate);
         
         return ResponseEntity.ok(heatmapData);
     }

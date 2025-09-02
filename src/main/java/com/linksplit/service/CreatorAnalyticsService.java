@@ -88,7 +88,10 @@ public class CreatorAnalyticsService {
             if (view.getUtmSource() != null) {
                 source = view.getUtmSource();
             } else if (view.getReferrer() != null && !view.getReferrer().isEmpty()) {
-                source = extractDomain(view.getReferrer());
+                source = identifyTrafficSource(view.getReferrer(), view.getUserAgent());
+            } else {
+                // Check user agent for mobile app patterns when no referrer is present
+                source = identifyTrafficSourceFromUserAgent(view.getUserAgent());
             }
             sourceCount.merge(source, 1L, Long::sum);
         }
@@ -150,6 +153,7 @@ public class CreatorAnalyticsService {
     }
     
     private TimeAnalytics analyzeTimePatterns(List<LinkView> views) {
+        log.info("Analyzing time patterns for {} views", views.size());
         Map<Integer, Long> hourlyDistribution = new TreeMap<>();
         Map<Integer, Long> dailyDistribution = new TreeMap<>();
         Map<String, Long> weeklyTrend = new TreeMap<>();
@@ -159,9 +163,12 @@ public class CreatorAnalyticsService {
             hourlyDistribution.merge(viewTime.getHour(), 1L, Long::sum);
             dailyDistribution.merge(viewTime.getDayOfWeek().getValue(), 1L, Long::sum);
             
-            String weekKey = viewTime.format(DateTimeFormatter.ISO_LOCAL_DATE);
-            weeklyTrend.merge(weekKey, 1L, Long::sum);
+            // Create daily data for the traffic over time chart
+            String dayKey = viewTime.format(DateTimeFormatter.ofPattern("MMM dd"));
+            weeklyTrend.merge(dayKey, 1L, Long::sum);
         }
+        
+        log.info("Generated weeklyTrend data: {}", weeklyTrend);
         
         return TimeAnalytics.builder()
                 .hourlyDistribution(hourlyDistribution)
@@ -192,6 +199,65 @@ public class CreatorAnalyticsService {
         
         long completed = views.stream().filter(v -> Boolean.TRUE.equals(v.getAdCompleted())).count();
         return (double) completed / views.size() * 100;
+    }
+    
+    private String identifyTrafficSource(String referrer, String userAgent) {
+        try {
+            java.net.URL netUrl = new java.net.URL(referrer);
+            String domain = netUrl.getHost().replaceFirst("^www\\.", "");
+            
+            // Handle special cases for messaging platforms
+            if (domain.contains("t.me") || domain.contains("telegram")) {
+                return "Telegram";
+            } else if (domain.contains("whatsapp") || domain.contains("chat.whatsapp.com")) {
+                return "WhatsApp";
+            } else if (domain.contains("facebook.com") || domain.contains("fb.com")) {
+                return "Facebook";
+            } else if (domain.contains("twitter.com") || domain.contains("x.com")) {
+                return "Twitter/X";
+            } else if (domain.contains("instagram.com")) {
+                return "Instagram";
+            } else if (domain.contains("linkedin.com")) {
+                return "LinkedIn";
+            } else if (domain.contains("youtube.com") || domain.contains("youtu.be")) {
+                return "YouTube";
+            } else if (domain.contains("google.com") || domain.contains("google.")) {
+                return "Google";
+            } else if (domain.contains("bing.com")) {
+                return "Bing";
+            } else if (domain.contains("yahoo.com")) {
+                return "Yahoo";
+            }
+            
+            return domain;
+        } catch (Exception e) {
+            return "Unknown";
+        }
+    }
+    
+    private String identifyTrafficSourceFromUserAgent(String userAgent) {
+        if (userAgent == null || userAgent.isEmpty()) {
+            return "Direct";
+        }
+        
+        String ua = userAgent.toLowerCase();
+        
+        // Check for messaging app user agents
+        if (ua.contains("telegram") || ua.contains("telegrambot")) {
+            return "Telegram";
+        } else if (ua.contains("whatsapp")) {
+            return "WhatsApp";
+        } else if (ua.contains("facebookexternalhit") || ua.contains("fban") || ua.contains("fbav")) {
+            return "Facebook";
+        } else if (ua.contains("twitterbot") || ua.contains("twitter")) {
+            return "Twitter/X";
+        } else if (ua.contains("instagrambot") || ua.contains("instagram")) {
+            return "Instagram";
+        } else if (ua.contains("linkedinbot") || ua.contains("linkedin")) {
+            return "LinkedIn";
+        }
+        
+        return "Direct";
     }
     
     private String extractDomain(String url) {

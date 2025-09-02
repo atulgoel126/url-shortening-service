@@ -1,5 +1,6 @@
 package com.linksplit.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,6 +19,7 @@ public class ClickHeatmap {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "link_id", nullable = false)
+    @JsonIgnore
     private Link link;
     
     @Column(name = "page_url", nullable = false)

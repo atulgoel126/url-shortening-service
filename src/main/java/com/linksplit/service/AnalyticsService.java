@@ -30,6 +30,16 @@ public class AnalyticsService {
 
     @Transactional
     public boolean recordView(Link link, HttpServletRequest request) {
+        return recordView(link, request, null, null);
+    }
+    
+    @Transactional
+    public boolean recordView(Link link, HttpServletRequest request, Integer timeToSkip) {
+        return recordView(link, request, timeToSkip, null);
+    }
+    
+    @Transactional
+    public boolean recordView(Link link, HttpServletRequest request, Integer timeToSkip, String originalReferrer) {
         String ipAddress = extractIpAddress(request);
         String userAgent = request.getHeader("User-Agent");
         
@@ -65,9 +75,15 @@ public class AnalyticsService {
                     .deviceType(deviceInfo.deviceType)
                     .browser(deviceInfo.browser)
                     .operatingSystem(deviceInfo.os)
-                    .referrer(request.getHeader("Referer"))
+                    .referrer(originalReferrer != null ? originalReferrer : request.getHeader("Referer"))
+                    .timeToSkip(timeToSkip) // Now properly set from frontend
                     .adCompleted(true) // This is set when ad completion is recorded
                     .build();
+            
+            // Log referrer information for debugging
+            String finalReferrer = originalReferrer != null ? originalReferrer : request.getHeader("Referer");
+            log.info("Recording view for link {} with referrer: {} (original: {}, current: {})", 
+                link.getShortCode(), finalReferrer, originalReferrer, request.getHeader("Referer"));
             
             linkViewRepository.save(view);
             linkRepository.incrementViewCount(link.getId());

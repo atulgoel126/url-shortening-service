@@ -73,13 +73,17 @@ echo "🧹 Cleaning up local archive..."
 rm "${ARCHIVE_NAME}"
 
 echo "========================================="
-echo "✅ Deployment package ready at:"
-echo "   ${EC2_USER}@${EC2_HOST}:~/${TIMESTAMP}/url-shortening-service/"
-echo ""
-echo "Next steps on EC2:"
-echo "1. ssh -i \"${KEY_PATH}\" ${EC2_USER}@${EC2_HOST}"
-echo "2. cd ${TIMESTAMP}/url-shortening-service"
-echo "3. sudo cp -r * /opt/linksplit/"
-echo "4. cd /opt/linksplit && mvn clean package"
-echo "5. sudo systemctl restart linksplit"
+echo "✅ Deployment package ready!"
+echo "📝 Remote directory: ${EC2_USER}@${EC2_HOST}:~/${TIMESTAMP}/url-shortening-service/"
+
+# SSH into server and run deployment
+echo "🔗 Connecting to server and running deployment..."
+ssh -i "${KEY_PATH}" "${EC2_USER}@${EC2_HOST}" << EOF
+    echo "📂 Changing to deployment directory..."
+    cd ${TIMESTAMP}/url-shortening-service
+    
+    echo "🚀 Running remote deployment..."
+    ./remote-deploy.sh
+EOF
+
 echo "========================================="

@@ -135,7 +135,7 @@
                 <div class="stats-label">
                     <i class="fas fa-fire"></i> Today's Clicks
                 </div>
-                <div class="stats-value">0</div>
+                <div class="stats-value" th:text="${stats.todayClicks}">0</div>
                 <div style="font-size: 0.875rem; opacity: 0.8; margin-top: 0.5rem;">
                     <i class="fas fa-clock"></i> Last 24 hours
                 </div>
@@ -235,7 +235,9 @@
                                             onclick="viewAnalytics(this)">
                                         <i class="fas fa-chart-bar"></i>
                                     </button>
-                                    <button class="copy-button" style="border-color: #ef4444; color: #ef4444;">
+                                    <button class="copy-button" style="border-color: #ef4444; color: #ef4444;"
+                                            th:data-link-id="${link.id}"
+                                            onclick="deleteLink(this)">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -403,6 +405,59 @@
             const shortCode = button.getAttribute('data-shortcode');
             // Navigate to analytics page for this specific link
             window.location.href = '/analytics?linkId=' + shortCode;
+        }
+        
+        async function deleteLink(button) {
+            const linkId = button.getAttribute('data-link-id');
+            
+            if (!confirm('Are you sure you want to delete this link? This action cannot be undone.')) {
+                return;
+            }
+            
+            const originalHTML = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            button.disabled = true;
+            
+            try {
+                const response = await fetch(`/api/url/${linkId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    // Remove the row from the table
+                    const row = button.closest('tr');
+                    row.remove();
+                    
+                    // Show success message
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert-modern alert-success-modern';
+                    alertDiv.innerHTML = '<i class="fas fa-check-circle"></i> Link deleted successfully!';
+                    alertDiv.style.position = 'fixed';
+                    alertDiv.style.top = '20px';
+                    alertDiv.style.right = '20px';
+                    alertDiv.style.zIndex = '9999';
+                    document.body.appendChild(alertDiv);
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(alertDiv);
+                    }, 3000);
+                } else if (response.status === 401) {
+                    alert('You are not authorized to delete this link.');
+                } else if (response.status === 404) {
+                    alert('Link not found.');
+                } else {
+                    alert('Failed to delete link. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error deleting link:', error);
+                alert('An error occurred while deleting the link.');
+            } finally {
+                button.innerHTML = originalHTML;
+                button.disabled = false;
+            }
         }
         
         function showCreateModal() {

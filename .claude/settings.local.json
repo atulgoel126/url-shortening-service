@@ -20,7 +20,8 @@
       "Bash(do if [ -f \"$file\" ])",
       "Bash(then sed -i '' 's/cli\\.p/frwrd.pro/g' \"$file\")",
       "Bash(fi)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(echo $BASE_URL)"
     ],
     "deny": [],
     "ask": []

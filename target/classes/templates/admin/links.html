@@ -161,6 +161,15 @@
                                             title="Copy Link">
                                         <i class="bi bi-clipboard"></i>
                                     </button>
+                                    <button type="button" 
+                                            class="btn btn-outline-danger"
+                                            th:data-link-id="${link.id}"
+                                            th:data-short-code="${link.shortCode}"
+                                            th:data-user-email="${link.user?.email ?: 'Anonymous'}"
+                                            onclick="adminDeleteLink(this)"
+                                            title="Delete Link">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -209,6 +218,81 @@
                     btn.classList.add('btn-outline-secondary');
                 }, 2000);
             });
+        }
+        
+        async function adminDeleteLink(button) {
+            const linkId = button.getAttribute('data-link-id');
+            const shortCode = button.getAttribute('data-short-code');
+            const userEmail = button.getAttribute('data-user-email');
+            
+            if (!confirm(`⚠️ ADMIN DELETE CONFIRMATION ⚠️\n\nAre you sure you want to delete this link?\n\nLink: ${shortCode}\nOwner: ${userEmail}\n\nThis action cannot be undone and will affect the user's analytics and earnings.`)) {
+                return;
+            }
+            
+            const originalHTML = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+            button.disabled = true;
+            
+            try {
+                const response = await fetch(`/api/url/${linkId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    // Show success message
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                    alertDiv.style.position = 'fixed';
+                    alertDiv.style.top = '20px';
+                    alertDiv.style.right = '20px';
+                    alertDiv.style.zIndex = '9999';
+                    alertDiv.style.minWidth = '300px';
+                    alertDiv.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            <div>
+                                <strong>Link Deleted Successfully</strong><br>
+                                <small>Link ${shortCode} owned by ${userEmail} has been removed</small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+                    `;
+                    document.body.appendChild(alertDiv);
+                    
+                    // Remove the row from the table
+                    const row = button.closest('tr');
+                    row.style.transition = 'opacity 0.3s';
+                    row.style.opacity = '0.5';
+                    
+                    setTimeout(() => {
+                        row.remove();
+                        // Auto-remove success message after 5 seconds
+                        setTimeout(() => {
+                            if (alertDiv.parentNode) {
+                                alertDiv.remove();
+                            }
+                        }, 5000);
+                    }, 300);
+                    
+                } else if (response.status === 401) {
+                    alert('❌ Authorization Error\n\nYou are not authorized to delete this link.\nPlease check your admin privileges.');
+                } else if (response.status === 404) {
+                    alert('❌ Link Not Found\n\nThis link may have already been deleted.');
+                    // Remove the row since it doesn't exist anymore
+                    button.closest('tr').remove();
+                } else {
+                    alert('❌ Delete Failed\n\nFailed to delete the link. Please try again or check the server logs.');
+                }
+            } catch (error) {
+                console.error('Error deleting link:', error);
+                alert('❌ Network Error\n\nAn error occurred while deleting the link.\nPlease check your connection and try again.');
+            } finally {
+                button.innerHTML = originalHTML;
+                button.disabled = false;
+            }
         }
     </script>
 </body>

@@ -1,5 +1,6 @@
 package com.linksplit.controller;
 
+import com.linksplit.config.AppConfig;
 import com.linksplit.entity.Link;
 import com.linksplit.entity.User;
 import com.linksplit.repository.LinkRepository;
@@ -33,6 +34,7 @@ public class AdminController {
     private final LinkRepository linkRepository;
     private final PayoutRepository payoutRepository;
     private final RevenueService revenueService;
+    private final AppConfig appConfig;
     
     @GetMapping
     public String adminDashboard(Model model) {
@@ -104,6 +106,7 @@ public class AdminController {
         model.addAttribute("totalViews", totalViews != null ? totalViews : 0L);
         model.addAttribute("totalEarnings", totalEarnings != null ? totalEarnings : BigDecimal.ZERO);
         model.addAttribute("linkCount", userLinks.size());
+        model.addAttribute("appConfig", appConfig);
         
         return "admin/user-details";
     }

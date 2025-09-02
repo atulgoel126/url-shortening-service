@@ -6,6 +6,7 @@ import com.linksplit.dto.RegisterRequest;
 import com.linksplit.entity.Link;
 import com.linksplit.entity.User;
 import com.linksplit.repository.LinkRepository;
+import com.linksplit.repository.LinkViewRepository;
 import com.linksplit.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,6 +34,7 @@ import java.math.BigDecimal;
 public class WebController {
     private final UserService userService;
     private final LinkRepository linkRepository;
+    private final LinkViewRepository linkViewRepository;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -83,9 +87,19 @@ public class WebController {
         Long totalViews = linkRepository.getTotalViewsByUser(user);
         BigDecimal totalEarnings = linkRepository.getTotalEarningsByUser(user);
         
+        // Calculate today's clicks
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+        Long todayClicks = linkViewRepository.getTodayClicksByLinks(
+            linkRepository.findByUser(user), 
+            startOfDay, 
+            endOfDay
+        );
+        
         DashboardStats stats = DashboardStats.builder()
             .totalLinks(userLinks.getTotalElements())
             .totalViews(totalViews != null ? totalViews : 0L)
+            .todayClicks(todayClicks != null ? todayClicks : 0L)
             .totalEarnings(totalEarnings != null ? totalEarnings : BigDecimal.ZERO)
             .build();
         

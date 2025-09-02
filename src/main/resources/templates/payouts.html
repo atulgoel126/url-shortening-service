@@ -84,10 +84,22 @@
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>Payouts</h1>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestPayoutModal"
-                    th:disabled="${availableBalance.compareTo(100) < 0}">
-                <i class="bi bi-cash-coin"></i> Request Payout
-            </button>
+            <div>
+                <button th:if="${availableBalance.compareTo(100) >= 0}" 
+                        class="btn btn-primary" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#requestPayoutModal">
+                    <i class="bi bi-cash-coin"></i> Request Payout
+                </button>
+                <button th:if="${availableBalance.compareTo(100) < 0}" 
+                        class="btn btn-outline-primary" 
+                        onclick="showMinimumPayoutAlert()"
+                        data-bs-toggle="tooltip" 
+                        data-bs-placement="left"
+                        th:title="'You need ₹' + ${100 - availableBalance} + ' more to request a payout'">
+                    <i class="bi bi-cash-coin"></i> Request Payout (₹100 minimum)
+                </button>
+            </div>
         </div>
 
         <!-- Alerts -->
@@ -99,6 +111,19 @@
         <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
             <span th:text="${error}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <!-- Minimum Payout Info -->
+        <div th:if="${availableBalance.compareTo(100) < 0}" class="alert alert-info" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <div>
+                    <strong>Payout Threshold Not Met</strong><br>
+                    <span>You have <strong>₹<span th:text="${#numbers.formatDecimal(availableBalance, 1, 2)}">0.00</span></strong> available. 
+                    You need <strong>₹<span th:text="${#numbers.formatDecimal(100 - availableBalance, 1, 2)}">100.00</span></strong> more to request a payout. 
+                    The minimum payout amount is ₹100.</span>
+                </div>
+            </div>
         </div>
 
         <!-- Stats Cards -->
@@ -262,5 +287,23 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        function showMinimumPayoutAlert() {
+            const availableBalance = parseFloat('[[${availableBalance}]]');
+            const neededAmount = (100 - availableBalance).toFixed(2);
+            
+            alert(`Minimum Payout Threshold Not Met\n\n` +
+                  `You currently have ₹${availableBalance.toFixed(2)} available.\n` +
+                  `You need ₹${neededAmount} more to reach the minimum payout of ₹100.\n\n` +
+                  `Keep sharing your links to earn more revenue!`);
+        }
+    </script>
 </body>
 </html>

@@ -59,4 +59,25 @@ public class UrlController {
             );
         }
     }
+
+    @DeleteMapping("/url/{linkId}")
+    public ResponseEntity<Void> deleteLink(@PathVariable Long linkId, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            User user = userService.getUserByEmail(authentication.getName());
+            boolean deleted = urlShorteningService.deleteLink(linkId, user);
+            
+            if (deleted) {
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            log.error("Error deleting link: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

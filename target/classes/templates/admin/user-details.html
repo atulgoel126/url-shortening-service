@@ -119,6 +119,51 @@
         <div class="detail-card">
             <h5 class="mb-3"><i class="bi bi-currency-rupee"></i> Revenue Configuration</h5>
             
+            <!-- Current Settings Display -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h6 class="text-muted mb-3">Current Effective Settings</h6>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="stat-box" style="background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);">
+                                <div class="text-muted">CPM Rate</div>
+                                <div class="stat-value" style="color: #0288d1;">
+                                    ₹<span th:text="${user.customCpmRate != null ? #numbers.formatDecimal(user.customCpmRate, 1, 2) : #numbers.formatDecimal(appConfig.cpmRate, 1, 2)}">1.00</span>
+                                </div>
+                                <small class="text-muted" th:text="${user.customCpmRate != null ? 'Custom Rate' : 'Platform Default'}">Platform Default</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-box" style="background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);">
+                                <div class="text-muted">Revenue Share</div>
+                                <div class="stat-value" style="color: #8e24aa;">
+                                    <span th:text="${user.customRevenueShare != null ? #numbers.formatDecimal(user.customRevenueShare * 100, 1, 0) : #numbers.formatDecimal(appConfig.revenueShare * 100, 1, 0)}">50</span>%
+                                </div>
+                                <small class="text-muted" th:text="${user.customRevenueShare != null ? 'Custom Share' : 'Platform Default'}">Platform Default</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-box" style="background: linear-gradient(135deg, #fff3e0 0%, #ffcc80 100%);">
+                                <div class="text-muted">Effective CPM</div>
+                                <div class="stat-value" style="color: #f57c00;">
+                                    ₹<span th:text="${#numbers.formatDecimal((user.customCpmRate != null ? user.customCpmRate : appConfig.cpmRate) * (user.customRevenueShare != null ? user.customRevenueShare : appConfig.revenueShare), 1, 2)}">0.50</span>
+                                </div>
+                                <small class="text-muted">Creator's Earnings/1000 views</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-box" style="background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);">
+                                <div class="text-muted">Minimum Payout</div>
+                                <div class="stat-value" style="color: #2e7d32;">
+                                    ₹100
+                                </div>
+                                <small class="text-muted">Platform Standard</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="alert alert-info">
                 <i class="bi bi-info-circle"></i> Configure custom revenue rates for this creator. Leave empty to use default platform rates.
             </div>

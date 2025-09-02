@@ -40,4 +40,10 @@ public interface LinkViewRepository extends JpaRepository<LinkView, Long> {
     @Query("SELECT lv.browser, COUNT(lv) FROM LinkView lv WHERE lv.link IN :links " +
            "GROUP BY lv.browser ORDER BY COUNT(lv) DESC")
     List<Object[]> getBrowserStatistics(@Param("links") List<Link> links);
+    
+    @Query("SELECT COUNT(lv) FROM LinkView lv WHERE lv.link IN :links " +
+           "AND lv.viewedAt >= :startOfDay AND lv.viewedAt < :endOfDay")
+    Long getTodayClicksByLinks(@Param("links") List<Link> links, 
+                              @Param("startOfDay") LocalDateTime startOfDay, 
+                              @Param("endOfDay") LocalDateTime endOfDay);
 }

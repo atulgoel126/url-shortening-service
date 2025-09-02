@@ -14,5 +14,6 @@ import java.math.BigDecimal;
 public class DashboardStats {
     private Long totalLinks;
     private Long totalViews;
+    private Long todayClicks;
     private BigDecimal totalEarnings;
 }

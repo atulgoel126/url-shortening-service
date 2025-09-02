@@ -47,7 +47,39 @@ public class UrlShorteningService {
     }
 
     public String getFullShortUrl(String shortCode) {
-        return appConfig.getBaseUrl() + "/link/" + shortCode;
+        String baseUrl = appConfig.getBaseUrl();
+        log.info("Using baseUrl: {} for shortCode: {}", baseUrl, shortCode);
+        return baseUrl + "/link/" + shortCode;
+    }
+
+    @Transactional
+    public boolean deleteLink(Long linkId, User user) {
+        Optional<Link> linkOpt = linkRepository.findById(linkId);
+        
+        if (linkOpt.isEmpty()) {
+            return false;
+        }
+        
+        Link link = linkOpt.get();
+        
+        // Check if user owns the link or is admin
+        if (user == null) {
+            throw new SecurityException("User not authorized to delete this link");
+        }
+        
+        // Check if user is admin
+        if ("ADMIN".equals(user.getRole())) {
+            // Admin can delete any link
+        } else {
+            // Regular user can only delete their own links
+            if (link.getUser() == null || !user.getId().equals(link.getUser().getId())) {
+                throw new SecurityException("User not authorized to delete this link");
+            }
+        }
+        
+        linkRepository.delete(link);
+        log.info("Deleted link with id: {} and shortCode: {}", linkId, link.getShortCode());
+        return true;
     }
 
     private String generateUniqueShortCode() {

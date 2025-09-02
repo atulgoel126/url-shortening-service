@@ -114,7 +114,7 @@
                             <td class="text-center" th:text="${userStats[user.id]['linkCount']}">0</td>
                             <td class="text-center" th:text="${userStats[user.id]['totalViews'] ?: 0}">0</td>
                             <td class="text-end">
-                                ₹<span th:text="${#numbers.formatDecimal(userStats[user.id]['totalEarnings'] ?: 0, 1, 2)}">0.00</span>
+                                ₹<span th:text="${#numbers.formatDecimal(userStats[user.id]['totalEarnings'] ?: 0, 1, 3)}">0.000</span>
                             </td>
                             <td>
                                 <small th:text="${#temporals.format(user.createdAt, 'MMM dd, yyyy')}">Date</small>

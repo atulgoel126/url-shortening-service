@@ -4,6 +4,7 @@ import com.linksplit.entity.Link;
 import com.linksplit.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,6 +20,10 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
     Optional<Link> findByShortCode(String shortCode);
     
     Page<Link> findByUserOrderByCreatedAtDesc(User user, Pageable pageable);
+    
+    @EntityGraph(attributePaths = {"comments"})
+    @Query("SELECT l FROM Link l WHERE l.user = :user ORDER BY l.createdAt DESC")
+    Page<Link> findByUserWithCommentsOrderByCreatedAtDesc(@Param("user") User user, Pageable pageable);
     
     List<Link> findByUser(User user);
     

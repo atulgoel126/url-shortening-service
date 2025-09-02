@@ -52,6 +52,9 @@ public class Link {
     @OneToMany(mappedBy = "link", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<LinkView> views;
 
+    @OneToMany(mappedBy = "link", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comment> comments;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

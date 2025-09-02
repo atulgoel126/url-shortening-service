@@ -1,4 +1,5 @@
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/dto/analytics/OverviewMetrics.java
+/Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/dto/CommentDto.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/entity/ClickHeatmap.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/service/UrlShorteningService.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/repository/LinkRepository.java
@@ -32,7 +33,9 @@
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/repository/PayoutRepository.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/dto/analytics/AnalyticsDashboard.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/entity/User.java
+/Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/controller/CommentController.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/controller/AccountController.java
+/Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/entity/Comment.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/controller/WebController.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/entity/PaymentMethod.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/service/RevenueService.java
@@ -41,6 +44,8 @@
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/dto/analytics/LinkPerformance.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/exception/ResourceNotFoundException.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/config/SecurityConfig.java
+/Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/service/CommentService.java
+/Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/dto/CreateCommentRequest.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/config/AppConfig.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/entity/IpViewTracker.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/dto/analytics/TimeAnalytics.java
@@ -52,4 +57,5 @@
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/dto/RegisterRequest.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/config/CacheConfig.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/config/DataInitializer.java
+/Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/repository/CommentRepository.java
 /Users/atulgoel/Desktop/cloven_apps/url-shortening-service/src/main/java/com/linksplit/controller/RedirectController.java

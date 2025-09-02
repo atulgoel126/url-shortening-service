@@ -126,7 +126,7 @@
             <div class="col-md-3">
                 <div class="stat-card">
                     <div class="stat-label">Total Earnings</div>
-                    <div class="stat-value">₹<span th:text="${#numbers.formatDecimal(totalEarnings, 1, 2)}">0</span></div>
+                    <div class="stat-value">₹<span th:text="${#numbers.formatDecimal(totalEarnings, 1, 3)}">0.000</span></div>
                     <small class="text-muted">Platform earnings</small>
                 </div>
             </div>
@@ -193,7 +193,7 @@
                                     </td>
                                     <td class="text-end">
                                         <span class="earnings-badge">
-                                            ₹<span th:text="${creator[1] != null ? #numbers.formatDecimal(creator[1], 1, 2) : '0.00'}">0</span>
+                                            ₹<span th:text="${creator[1] != null ? #numbers.formatDecimal(creator[1], 1, 3) : '0.000'}">0.000</span>
                                         </span>
                                     </td>
                                 </tr>

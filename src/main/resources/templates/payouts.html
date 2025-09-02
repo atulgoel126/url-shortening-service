@@ -119,8 +119,8 @@
                 <i class="bi bi-info-circle-fill me-2"></i>
                 <div>
                     <strong>Payout Threshold Not Met</strong><br>
-                    <span>You have <strong>₹<span th:text="${#numbers.formatDecimal(availableBalance, 1, 2)}">0.00</span></strong> available. 
-                    You need <strong>₹<span th:text="${#numbers.formatDecimal(100 - availableBalance, 1, 2)}">100.00</span></strong> more to request a payout. 
+                    <span>You have <strong>₹<span th:text="${#numbers.formatDecimal(availableBalance, 1, 3)}">0.000</span></strong> available. 
+                    You need <strong>₹<span th:text="${#numbers.formatDecimal(100 - availableBalance, 1, 3)}">100.000</span></strong> more to request a payout. 
                     The minimum payout amount is ₹100.</span>
                 </div>
             </div>
@@ -132,7 +132,7 @@
                 <div class="stats-card primary">
                     <h6 class="mb-2 opacity-75">Available Balance</h6>
                     <div class="stats-value">
-                        ₹<span th:text="${#numbers.formatDecimal(availableBalance, 1, 2)}">0.00</span>
+                        ₹<span th:text="${#numbers.formatDecimal(availableBalance, 1, 3)}">0.000</span>
                     </div>
                     <small th:if="${availableBalance.compareTo(100) < 0}" class="opacity-75">
                         Min. ₹100 required for payout
@@ -143,7 +143,7 @@
                 <div class="stats-card success">
                     <h6 class="mb-2 opacity-75">Total Paid Out</h6>
                     <div class="stats-value">
-                        ₹<span th:text="${#numbers.formatDecimal(totalPaid, 1, 2)}">0.00</span>
+                        ₹<span th:text="${#numbers.formatDecimal(totalPaid, 1, 3)}">0.000</span>
                     </div>
                 </div>
             </div>
@@ -151,7 +151,7 @@
                 <div class="stats-card warning">
                     <h6 class="mb-2 opacity-75">Pending Payouts</h6>
                     <div class="stats-value">
-                        ₹<span th:text="${#numbers.formatDecimal(pendingAmount, 1, 2)}">0.00</span>
+                        ₹<span th:text="${#numbers.formatDecimal(pendingAmount, 1, 3)}">0.000</span>
                     </div>
                 </div>
             </div>
@@ -190,7 +190,7 @@
                                     <code th:text="${payout.referenceNumber}">PAY12345</code>
                                 </td>
                                 <td>
-                                    <strong>₹<span th:text="${#numbers.formatDecimal(payout.amount, 1, 2)}">100.00</span></strong>
+                                    <strong>₹<span th:text="${#numbers.formatDecimal(payout.amount, 1, 3)}">100.000</span></strong>
                                 </td>
                                 <td>
                                     <span th:class="${'status-badge status-' + #strings.toLowerCase(payout.status)}"
@@ -261,7 +261,7 @@
                         <h6>Payout Details</h6>
                         <p class="mb-2">
                             <strong>Available Balance:</strong> 
-                            ₹<span th:text="${#numbers.formatDecimal(availableBalance, 1, 2)}">0.00</span>
+                            ₹<span th:text="${#numbers.formatDecimal(availableBalance, 1, 3)}">0.000</span>
                         </p>
                         <p class="mb-0">
                             <small>Your payout will be processed within 24-48 hours to your primary UPI ID.</small>

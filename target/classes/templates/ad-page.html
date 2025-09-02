@@ -71,7 +71,7 @@
             </div>
             
             <div class="mb-3">
-                <p class="countdown-timer">Please wait <span id="countdown" th:text="${countdownSeconds}">5</span> seconds...</p>
+                <p class="countdown-timer" id="countdownText">Please wait <span id="countdown" th:text="${countdownSeconds}">5</span> seconds...</p>
             </div>
             
             <button id="skipButton" class="btn btn-primary btn-lg" disabled>
@@ -127,12 +127,18 @@
                 
                 if (remainingSeconds <= 0) {
                     clearInterval(countdownInterval);
+                    document.getElementById('countdownText').innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i>Redirecting to your destination...';
                     skipButton.disabled = false;
-                    skipButton.textContent = 'Continue to destination';
+                    skipButton.textContent = 'Redirecting...';
                     skipButton.classList.remove('btn-primary');
                     skipButton.classList.add('btn-success');
                     adCompleted = true;
                     console.log('Ad completed');
+                    
+                    // Automatically redirect after ad completion
+                    setTimeout(async () => {
+                        await completeAdAndRedirect();
+                    }, 500); // Small delay to show the button change
                 }
             }, 1000);
         }
@@ -140,40 +146,46 @@
         // Listen for visibility changes
         document.addEventListener('visibilitychange', handleVisibilityChange);
         
+        // Function to complete ad and redirect
+        async function completeAdAndRedirect() {
+            // Only record view if ad was completed and not blocked
+            if (adCompleted && !viewBlocked) {
+                try {
+                    // Calculate time spent on ad page in seconds
+                    const timeToSkip = Math.round((Date.now() - startTime) / 1000);
+                    
+                    const response = await fetch('/api/complete-ad', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `shortCode=${encodeURIComponent(shortCode)}&token=${encodeURIComponent(sessionToken)}&timeToSkip=${timeToSkip}`
+                    });
+                    
+                    const data = await response.json();
+                    console.log('Ad completion recorded:', data);
+                } catch (error) {
+                    console.error('Failed to record ad completion:', error);
+                }
+            }
+            
+            // Cleanup event listener and timer
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+            
+            // Redirect to destination
+            window.location.href = destinationUrl;
+        }
+        
         // Start the countdown initially
         startCountdown();
         
+        // Handle manual skip button click
         skipButton.addEventListener('click', async () => {
             if (!skipButton.disabled) {
-                // Only record view if ad was completed and not blocked
-                if (adCompleted && !viewBlocked) {
-                    try {
-                        // Calculate time spent on ad page in seconds
-                        const timeToSkip = Math.round((Date.now() - startTime) / 1000);
-                        
-                        const response = await fetch('/api/complete-ad', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                            },
-                            body: `shortCode=${encodeURIComponent(shortCode)}&token=${encodeURIComponent(sessionToken)}&timeToSkip=${timeToSkip}`
-                        });
-                        
-                        const data = await response.json();
-                        console.log('Ad completion recorded:', data);
-                    } catch (error) {
-                        console.error('Failed to record ad completion:', error);
-                    }
-                }
-                
-                // Cleanup event listener and timer
-                document.removeEventListener('visibilitychange', handleVisibilityChange);
-                if (countdownInterval) {
-                    clearInterval(countdownInterval);
-                }
-                
-                // Redirect to destination
-                window.location.href = destinationUrl;
+                await completeAdAndRedirect();
             }
         });
         

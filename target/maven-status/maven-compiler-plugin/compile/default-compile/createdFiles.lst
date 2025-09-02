@@ -9,6 +9,7 @@ com/linksplit/entity/User$UserBuilder.class
 com/linksplit/dto/CreateUrlResponse$CreateUrlResponseBuilder.class
 com/linksplit/service/GeoLocationService$GeoLocation.class
 com/linksplit/service/AnalyticsService$DeviceInfo.class
+com/linksplit/entity/Comment.class
 com/linksplit/service/UrlShorteningService.class
 com/linksplit/repository/IpViewTrackerRepository.class
 com/linksplit/entity/User.class
@@ -36,6 +37,7 @@ com/linksplit/controller/AuthController.class
 com/linksplit/dto/RegisterRequest$RegisterRequestBuilder.class
 com/linksplit/service/PaymentService.class
 com/linksplit/dto/analytics/TimeAnalytics$TimeAnalyticsBuilder.class
+com/linksplit/dto/CommentDto$CommentDtoBuilder.class
 com/linksplit/dto/analytics/GeographicData$GeographicDataBuilder.class
 com/linksplit/service/AnalyticsService.class
 com/linksplit/service/GeoLocationService.class
@@ -54,12 +56,15 @@ com/linksplit/dto/analytics/GeographicData.class
 com/linksplit/entity/LinkView.class
 com/linksplit/entity/Payout$PayoutBuilder.class
 com/linksplit/service/UserService.class
+com/linksplit/entity/Comment$CommentBuilder.class
 com/linksplit/service/ViewLimitService$ViewStats$ViewStatsBuilder.class
+com/linksplit/repository/CommentRepository.class
 com/linksplit/entity/IpViewTracker.class
 com/linksplit/repository/PaymentMethodRepository.class
 com/linksplit/config/DataInitializer.class
 com/linksplit/dto/analytics/AnalyticsDashboard$AnalyticsDashboardBuilder.class
 com/linksplit/entity/Link$LinkBuilder.class
+com/linksplit/dto/CreateCommentRequest.class
 com/linksplit/controller/WebController.class
 com/linksplit/entity/Link.class
 com/linksplit/service/ViewLimitService.class
@@ -68,6 +73,7 @@ com/linksplit/dto/analytics/AnalyticsDashboard.class
 com/linksplit/dto/analytics/LinkPerformance.class
 com/linksplit/dto/LoginRequest.class
 com/linksplit/exception/ResourceNotFoundException.class
+com/linksplit/controller/CommentController.class
 com/linksplit/dto/analytics/DeviceAnalytics.class
 com/linksplit/config/AppConfig$ViewFraudPrevention$RateLimit.class
 com/linksplit/dto/DashboardStats$DashboardStatsBuilder.class
@@ -76,6 +82,8 @@ com/linksplit/entity/Payout.class
 com/linksplit/dto/LoginRequest$LoginRequestBuilder.class
 com/linksplit/repository/LinkViewRepository.class
 com/linksplit/controller/ContactController.class
+com/linksplit/service/CommentService.class
+com/linksplit/dto/CommentDto.class
 com/linksplit/controller/AnalyticsController$LocationData.class
 com/linksplit/dto/analytics/TrafficSource.class
 com/linksplit/entity/PaymentMethod$PaymentMethodBuilder.class

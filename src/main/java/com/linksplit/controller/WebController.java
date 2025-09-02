@@ -80,7 +80,7 @@ public class WebController {
             return "redirect:/admin";
         }
         
-        Page<Link> userLinks = linkRepository.findByUserOrderByCreatedAtDesc(
+        Page<Link> userLinks = linkRepository.findByUserWithCommentsOrderByCreatedAtDesc(
             user, PageRequest.of(page, 10)
         );
         

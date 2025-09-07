@@ -55,6 +55,7 @@ public class CreatorAnalyticsService {
                         .views(link.getViewCount())
                         .earnings(link.getEstimatedEarnings())
                         .completionRate(calculateLinkCompletionRate(link))
+                        .deleted(link.getDeleted())
                         .build()
                 ))
                 .build();
@@ -180,17 +181,41 @@ public class CreatorAnalyticsService {
     }
     
     private List<LinkPerformance> getTopPerformingLinks(List<Link> links) {
-        return links.stream()
+        // Separate active and deleted links
+        List<LinkPerformance> activeLinks = links.stream()
+                .filter(link -> !Boolean.TRUE.equals(link.getDeleted()))
                 .map(link -> LinkPerformance.builder()
                         .shortCode(link.getShortCode())
                         .longUrl(link.getLongUrl())
                         .views(link.getViewCount())
                         .earnings(link.getEstimatedEarnings())
                         .completionRate(calculateLinkCompletionRate(link))
+                        .deleted(false)
                         .build())
                 .sorted((a, b) -> Long.compare(b.getViews(), a.getViews()))
                 .limit(10)
                 .collect(Collectors.toList());
+        
+        // Get deleted links sorted by view count
+        List<LinkPerformance> deletedLinks = links.stream()
+                .filter(link -> Boolean.TRUE.equals(link.getDeleted()))
+                .map(link -> LinkPerformance.builder()
+                        .shortCode(link.getShortCode())
+                        .longUrl(link.getLongUrl())
+                        .views(link.getViewCount())
+                        .earnings(link.getEstimatedEarnings())
+                        .completionRate(calculateLinkCompletionRate(link))
+                        .deleted(true)
+                        .build())
+                .sorted((a, b) -> Long.compare(b.getViews(), a.getViews()))
+                .collect(Collectors.toList());
+        
+        // Combine lists with active links first, then deleted links
+        List<LinkPerformance> combined = new ArrayList<>();
+        combined.addAll(activeLinks);
+        combined.addAll(deletedLinks);
+        
+        return combined;
     }
     
     private double calculateLinkCompletionRate(Link link) {

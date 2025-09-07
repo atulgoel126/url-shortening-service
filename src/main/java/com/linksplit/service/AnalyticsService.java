@@ -88,15 +88,24 @@ public class AnalyticsService {
             linkViewRepository.save(view);
             linkRepository.incrementViewCount(link.getId());
             
-            // Update earnings immediately after recording view
-            Long newViewCount = link.getViewCount() + 1;
+            // Flush to ensure view count is updated in database
+            linkRepository.flush();
+            
+            // Fetch the updated link to get the correct view count
+            Link updatedLink = linkRepository.findById(link.getId())
+                    .orElseThrow(() -> new RuntimeException("Link not found after update"));
+            
+            // Update earnings based on the actual new view count
+            Long oldViewCount = link.getViewCount();
+            Long newViewCount = updatedLink.getViewCount();
+            BigDecimal oldEarnings = link.getEstimatedEarnings();
             BigDecimal newEarnings = link.getUser() != null 
                 ? revenueService.calculateEarnings(newViewCount, link.getUser())
                 : calculateEarnings(newViewCount);
             linkRepository.updateEarnings(link.getId(), newEarnings);
             
-            log.info("Recorded view for link {} from IP {}, updated earnings to {}", 
-                link.getShortCode(), ipAddress, newEarnings);
+            log.info("Recorded view for link {} from IP {}. Views: {} -> {}, Earnings: {} -> {}", 
+                link.getShortCode(), ipAddress, oldViewCount, newViewCount, oldEarnings, newEarnings);
             return true;
         } catch (Exception e) {
             log.error("Failed to record view for link {}: {}", link.getShortCode(), e.getMessage());
@@ -113,7 +122,15 @@ public class AnalyticsService {
         
         for (Link link : allLinks) {
             if (link.getViewCount() > 0) {
-                BigDecimal earnings = calculateEarnings(link.getViewCount());
+                // IMPORTANT: Use user-specific rates if the link has a user
+                BigDecimal earnings;
+                if (link.getUser() != null) {
+                    // Use RevenueService which respects custom user rates
+                    earnings = revenueService.calculateEarnings(link.getViewCount(), link.getUser());
+                } else {
+                    // Only use default rates for links without users (shouldn't happen)
+                    earnings = calculateEarnings(link.getViewCount());
+                }
                 linkRepository.updateEarnings(link.getId(), earnings);
             }
         }

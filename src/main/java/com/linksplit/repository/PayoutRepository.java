@@ -33,4 +33,14 @@ public interface PayoutRepository extends JpaRepository<Payout, Long> {
                                              @Param("before") LocalDateTime before);
     
     boolean existsByReferenceNumber(String referenceNumber);
+    
+    // Admin methods  
+    Page<Payout> findAllByOrderByRequestedAtDesc(Pageable pageable);
+    
+    Page<Payout> findByStatusOrderByRequestedAtDesc(Payout.PayoutStatus status, Pageable pageable);
+    
+    long countByStatus(Payout.PayoutStatus status);
+    
+    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payout p WHERE p.status = :status")
+    BigDecimal sumAmountByStatus(@Param("status") Payout.PayoutStatus status);
 }

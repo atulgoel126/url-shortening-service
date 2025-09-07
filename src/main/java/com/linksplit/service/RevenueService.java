@@ -40,11 +40,16 @@ public class RevenueService {
                 : BigDecimal.valueOf(appConfig.getRevenueShare());
         
         // Calculate: (views / 1000) * cpmRate * revenueShare
-        return BigDecimal.valueOf(viewCount)
+        BigDecimal earnings = BigDecimal.valueOf(viewCount)
                 .divide(BigDecimal.valueOf(1000), 10, RoundingMode.HALF_UP)
                 .multiply(cpmRate)
                 .multiply(revenueShare)
                 .setScale(4, RoundingMode.HALF_UP);
+        
+        log.debug("Calculated earnings for {} views: CPM={}, Share={}, Earnings={}", 
+                viewCount, cpmRate, revenueShare, earnings);
+        
+        return earnings;
     }
     
     /**

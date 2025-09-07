@@ -1,2 +1,0 @@
-app:
-  base-url: ${BASE_URL:https://frwrd.pro}

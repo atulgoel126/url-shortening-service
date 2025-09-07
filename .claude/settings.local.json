@@ -21,7 +21,9 @@
       "Bash(then sed -i '' 's/cli\\.p/frwrd.pro/g' \"$file\")",
       "Bash(fi)",
       "Bash(done)",
-      "Bash(echo $BASE_URL)"
+      "Bash(echo $BASE_URL)",
+      "Bash(ping:*)",
+      "Bash(lsof:*)"
     ],
     "deny": [],
     "ask": []

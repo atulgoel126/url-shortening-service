@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    # Using Supabase pooler endpoint which supports IPv4
+    url: jdbc:postgresql://aws-1-ap-south-1.pooler.supabase.com:5432/postgres
+    username: postgres.vcwireorjflemkupqacv
+    password: /9i36X-E.C6JPNy
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000
+
+# Override base URL for local development  
+app:
+  base-url: http://localhost:8080
+
+# Keep other settings from main application.yml

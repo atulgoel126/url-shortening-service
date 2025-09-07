@@ -36,12 +36,22 @@ public class WebController {
     private final LinkRepository linkRepository;
     private final LinkViewRepository linkViewRepository;
 
+    @ModelAttribute
+    public void addUserInfoToModel(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
+            model.addAttribute("isLoggedIn", true);
+            boolean isAdmin = auth.getAuthorities().stream()
+                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+            model.addAttribute("isAdmin", isAdmin);
+        } else {
+            model.addAttribute("isLoggedIn", false);
+            model.addAttribute("isAdmin", false);
+        }
+    }
+
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("isLoggedIn", 
-            SecurityContextHolder.getContext().getAuthentication() != null &&
-            SecurityContextHolder.getContext().getAuthentication().isAuthenticated() &&
-            !SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser"));
         return "index";
     }
 

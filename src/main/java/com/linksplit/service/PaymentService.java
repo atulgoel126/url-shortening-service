@@ -114,17 +114,33 @@ public class PaymentService {
             totalPaidOut = BigDecimal.ZERO;
         }
         
-        // Calculate available balance
-        BigDecimal availableBalance = totalEarnings.subtract(totalPaidOut);
+        // Get pending payouts amount
+        BigDecimal pendingPayouts = payoutRepository.getTotalPayoutsByUserAndStatus(user, Payout.PayoutStatus.PENDING);
+        if (pendingPayouts == null) {
+            pendingPayouts = BigDecimal.ZERO;
+        }
+        
+        // Also check for processing payouts
+        BigDecimal processingPayouts = payoutRepository.getTotalPayoutsByUserAndStatus(user, Payout.PayoutStatus.PROCESSING);
+        if (processingPayouts == null) {
+            processingPayouts = BigDecimal.ZERO;
+        }
+        
+        // Calculate available balance (earnings minus all payouts - completed, pending, and processing)
+        BigDecimal availableBalance = totalEarnings
+                .subtract(totalPaidOut)
+                .subtract(pendingPayouts)
+                .subtract(processingPayouts);
         
         // Check minimum payout threshold
         if (availableBalance.compareTo(MINIMUM_PAYOUT) < 0) {
-            throw new IllegalArgumentException("Minimum payout amount is ₹" + MINIMUM_PAYOUT);
+            throw new IllegalArgumentException("Minimum payout amount is ₹" + MINIMUM_PAYOUT + 
+                    ". Your available balance is ₹" + availableBalance.setScale(2, RoundingMode.HALF_UP));
         }
         
         // Get primary payment method
         PaymentMethod primaryPaymentMethod = paymentMethodRepository.findByUserAndIsPrimaryTrue(user)
-                .orElseThrow(() -> new IllegalArgumentException("No primary payment method found"));
+                .orElseThrow(() -> new IllegalArgumentException("No primary payment method found. Please <a href='/account'>add a payment method</a> first."));
         
         // Get total views for this payout
         Long totalViews = linkRepository.getTotalViewsByUser(user);
@@ -180,7 +196,12 @@ public class PaymentService {
             pendingPayouts = BigDecimal.ZERO;
         }
         
-        return totalEarnings.subtract(totalPaidOut).subtract(pendingPayouts);
+        BigDecimal processingPayouts = payoutRepository.getTotalPayoutsByUserAndStatus(user, Payout.PayoutStatus.PROCESSING);
+        if (processingPayouts == null) {
+            processingPayouts = BigDecimal.ZERO;
+        }
+        
+        return totalEarnings.subtract(totalPaidOut).subtract(pendingPayouts).subtract(processingPayouts);
     }
     
     // Scheduled job to process payouts (runs daily at 2 AM)

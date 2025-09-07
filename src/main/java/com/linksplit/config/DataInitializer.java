@@ -6,9 +6,11 @@ import com.linksplit.service.PaymentService;
 import com.linksplit.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
@@ -19,6 +21,7 @@ import java.util.Random;
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
+@Profile("!prod") // This ensures DataInitializer NEVER runs in production
 public class DataInitializer {
     
     @Bean
@@ -31,43 +34,62 @@ public class DataInitializer {
                                   PaymentService paymentService) {
         
         return args -> {
-            // Check if test user already exists
-            if (userRepository.findByEmail("demo@linksplit.com").isPresent()) {
-                log.info("Demo data already exists, skipping initialization");
+            // IMPORTANT: Skip ALL initialization if ANY users exist
+            // This prevents overwriting custom rates on deployment
+            if (userRepository.count() > 0) {
+                log.info("Users already exist in database, skipping ALL initialization to preserve custom rates");
                 return;
             }
             
-            log.info("Creating demo user and sample data...");
+            log.info("Creating demo users and sample data...");
             
-            // Create super admin user
-            User adminUser = User.builder()
-                    .email("admin@frwrd.pro")
-                    .passwordHash(passwordEncoder.encode("admin@2024"))
-                    .role("ADMIN")
-                    .supabaseId("admin-supabase-id") // Placeholder Supabase ID
-                    .build();
-            adminUser = userRepository.save(adminUser);
-            log.info("Created super admin user: admin@frwrd.pro / admin@2024");
+            // Create or update super admin user (preserving custom rates if they exist)
+            User adminUser = userRepository.findByEmail("admin@frwrd.pro")
+                    .orElseGet(() -> User.builder()
+                            .email("admin@frwrd.pro")
+                            .passwordHash(passwordEncoder.encode("admin@2024"))
+                            .role("ADMIN")
+                            .supabaseId("admin-supabase-id") // Placeholder Supabase ID
+                            .build());
             
-            // Create demo user (this will match the existing Supabase auth user)
-            User demoUser = User.builder()
-                    .email("demo@linksplit.com")
-                    .passwordHash(passwordEncoder.encode("demo123"))
-                    .role("USER")
-                    .supabaseId("f4b47c51-2f80-492e-a8fb-c796b7c9a5e8") // Actual Supabase ID from logs
-                    .build();
-            demoUser = userRepository.save(demoUser);
-            log.info("Created demo user: demo@linksplit.com / demo123");
+            if (adminUser.getId() == null) {
+                adminUser = userRepository.save(adminUser);
+                log.info("Created super admin user: admin@frwrd.pro / admin@2024");
+            } else {
+                log.info("Admin user already exists, preserving custom rates");
+            }
             
-            // Create test user
-            User testUser = User.builder()
-                    .email("test@frwrd.pro")
-                    .passwordHash(passwordEncoder.encode("test123"))
-                    .role("USER")
-                    .supabaseId("test-supabase-id") // Placeholder Supabase ID
-                    .build();
-            testUser = userRepository.save(testUser);
-            log.info("Created test user: test@frwrd.pro / test123");
+            // Create or update demo user (preserving custom rates if they exist)
+            User demoUser = userRepository.findByEmail("demo@linksplit.com")
+                    .orElseGet(() -> User.builder()
+                            .email("demo@linksplit.com")
+                            .passwordHash(passwordEncoder.encode("demo123"))
+                            .role("USER")
+                            .supabaseId("f4b47c51-2f80-492e-a8fb-c796b7c9a5e8") // Actual Supabase ID from logs
+                            .build());
+            
+            if (demoUser.getId() == null) {
+                demoUser = userRepository.save(demoUser);
+                log.info("Created demo user: demo@linksplit.com / demo123");
+            } else {
+                log.info("Demo user already exists, preserving custom rates");
+            }
+            
+            // Create or update test user (preserving custom rates if they exist)
+            User testUser = userRepository.findByEmail("test@frwrd.pro")
+                    .orElseGet(() -> User.builder()
+                            .email("test@frwrd.pro")
+                            .passwordHash(passwordEncoder.encode("test123"))
+                            .role("USER")
+                            .supabaseId("test-supabase-id") // Placeholder Supabase ID
+                            .build());
+            
+            if (testUser.getId() == null) {
+                testUser = userRepository.save(testUser);
+                log.info("Created test user: test@frwrd.pro / test123");
+            } else {
+                log.info("Test user already exists, preserving custom rates");
+            }
             
             // Add payment methods
             PaymentMethod upi1 = PaymentMethod.builder()

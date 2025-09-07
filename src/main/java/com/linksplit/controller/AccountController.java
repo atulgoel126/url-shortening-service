@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,20 @@ public class AccountController {
     private final UserService userService;
     private final PaymentService paymentService;
     private final PayoutRepository payoutRepository;
+    
+    @ModelAttribute
+    public void addUserInfoToModel(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
+            model.addAttribute("isLoggedIn", true);
+            boolean isAdmin = auth.getAuthorities().stream()
+                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+            model.addAttribute("isAdmin", isAdmin);
+        } else {
+            model.addAttribute("isLoggedIn", false);
+            model.addAttribute("isAdmin", false);
+        }
+    }
     
     @GetMapping("/account")
     public String showAccount(Model model, Authentication authentication) {

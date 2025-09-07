@@ -2,6 +2,7 @@ package com.linksplit.controller;
 
 import com.linksplit.config.AppConfig;
 import com.linksplit.entity.Link;
+import com.linksplit.entity.Payout;
 import com.linksplit.entity.User;
 import com.linksplit.repository.LinkRepository;
 import com.linksplit.repository.PayoutRepository;
@@ -101,12 +102,20 @@ public class AdminController {
         Long totalViews = linkRepository.getTotalViewsByUser(user);
         BigDecimal totalEarnings = linkRepository.getTotalEarningsByUser(user);
         
+        // Fetch user's payouts
+        List<Payout> userPayouts = payoutRepository.findByUserOrderByRequestedAtDesc(user, PageRequest.of(0, 10)).getContent();
+        BigDecimal totalPaidOut = payoutRepository.getTotalPayoutsByUserAndStatus(user, Payout.PayoutStatus.COMPLETED);
+        BigDecimal pendingPayouts = payoutRepository.getTotalPayoutsByUserAndStatus(user, Payout.PayoutStatus.PENDING);
+        
         model.addAttribute("user", user);
         model.addAttribute("links", userLinks);
         model.addAttribute("totalViews", totalViews != null ? totalViews : 0L);
         model.addAttribute("totalEarnings", totalEarnings != null ? totalEarnings : BigDecimal.ZERO);
         model.addAttribute("linkCount", userLinks.size());
         model.addAttribute("appConfig", appConfig);
+        model.addAttribute("payouts", userPayouts);
+        model.addAttribute("totalPaidOut", totalPaidOut != null ? totalPaidOut : BigDecimal.ZERO);
+        model.addAttribute("pendingPayouts", pendingPayouts != null ? pendingPayouts : BigDecimal.ZERO);
         
         return "admin/user-details";
     }
@@ -177,5 +186,105 @@ public class AdminController {
         }
         
         return "redirect:/admin/user/" + id;
+    }
+    
+    @GetMapping("/payouts")
+    public String listPayouts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) String status,
+            Model model) {
+        
+        Page<Payout> payouts;
+        if (status != null && !status.isEmpty()) {
+            try {
+                Payout.PayoutStatus payoutStatus = Payout.PayoutStatus.valueOf(status.toUpperCase());
+                payouts = payoutRepository.findByStatusOrderByRequestedAtDesc(payoutStatus, PageRequest.of(page, size));
+            } catch (IllegalArgumentException e) {
+                // Invalid status, show all
+                payouts = payoutRepository.findAllByOrderByRequestedAtDesc(PageRequest.of(page, size));
+            }
+        } else {
+            payouts = payoutRepository.findAllByOrderByRequestedAtDesc(PageRequest.of(page, size));
+        }
+        
+        // Calculate statistics
+        long pendingCount = payoutRepository.countByStatus(Payout.PayoutStatus.PENDING);
+        long processingCount = payoutRepository.countByStatus(Payout.PayoutStatus.PROCESSING);
+        long completedCount = payoutRepository.countByStatus(Payout.PayoutStatus.COMPLETED);
+        long failedCount = payoutRepository.countByStatus(Payout.PayoutStatus.FAILED);
+        
+        BigDecimal totalPending = payoutRepository.sumAmountByStatus(Payout.PayoutStatus.PENDING);
+        BigDecimal totalProcessing = payoutRepository.sumAmountByStatus(Payout.PayoutStatus.PROCESSING);
+        BigDecimal totalCompleted = payoutRepository.sumAmountByStatus(Payout.PayoutStatus.COMPLETED);
+        
+        model.addAttribute("payouts", payouts);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", payouts.getTotalPages());
+        model.addAttribute("currentStatus", status);
+        
+        // Statistics
+        model.addAttribute("pendingCount", pendingCount);
+        model.addAttribute("processingCount", processingCount);
+        model.addAttribute("completedCount", completedCount);
+        model.addAttribute("failedCount", failedCount);
+        model.addAttribute("totalPending", totalPending != null ? totalPending : BigDecimal.ZERO);
+        model.addAttribute("totalProcessing", totalProcessing != null ? totalProcessing : BigDecimal.ZERO);
+        model.addAttribute("totalCompleted", totalCompleted != null ? totalCompleted : BigDecimal.ZERO);
+        
+        return "admin/payouts";
+    }
+    
+    @PostMapping("/payout/{id}/status")
+    public String updatePayoutStatus(
+            @PathVariable Long id,
+            @RequestParam String status,
+            @RequestParam(required = false) String transactionId,
+            @RequestParam(required = false) String failedReason,
+            @RequestParam(required = false) String notes,
+            RedirectAttributes redirectAttributes) {
+        
+        log.info("Updating payout status for ID: {}, new status: {}", id, status);
+        
+        try {
+            Payout payout = payoutRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Payout not found with ID: " + id));
+            
+            Payout.PayoutStatus newStatus = Payout.PayoutStatus.valueOf(status.toUpperCase());
+            Payout.PayoutStatus oldStatus = payout.getStatus();
+            payout.setStatus(newStatus);
+            
+            if (newStatus == Payout.PayoutStatus.COMPLETED) {
+                payout.setProcessedAt(LocalDateTime.now());
+                if (transactionId != null && !transactionId.isEmpty()) {
+                    payout.setTransactionId(transactionId);
+                }
+            } else if (newStatus == Payout.PayoutStatus.FAILED) {
+                payout.setProcessedAt(LocalDateTime.now());
+                if (failedReason != null && !failedReason.isEmpty()) {
+                    payout.setFailedReason(failedReason);
+                }
+            } else if (newStatus == Payout.PayoutStatus.PROCESSING) {
+                payout.setProcessedAt(LocalDateTime.now());
+            }
+            
+            if (notes != null && !notes.isEmpty()) {
+                payout.setNotes(notes);
+            }
+            
+            payoutRepository.save(payout);
+            
+            log.info("Successfully updated payout {} from {} to {}", id, oldStatus, newStatus);
+            
+            redirectAttributes.addFlashAttribute("success", 
+                String.format("Payout #%d status updated from %s to %s", id, oldStatus, newStatus));
+            
+        } catch (Exception e) {
+            log.error("Error updating payout status for id {}: {}", id, e.getMessage());
+            redirectAttributes.addFlashAttribute("error", 
+                "Failed to update payout status: " + e.getMessage());
+        }
+        
+        return "redirect:/admin/payouts";
     }
 }

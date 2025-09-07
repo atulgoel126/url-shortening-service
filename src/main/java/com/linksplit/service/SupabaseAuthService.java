@@ -121,7 +121,7 @@ public class SupabaseAuthService {
                         u.setSupabaseId(supabaseId);
                         return u;
                     }
-                    // Create new user
+                    // Create new user - only for truly new users
                     return User.builder()
                             .supabaseId(supabaseId)
                             .email(email)
@@ -129,17 +129,27 @@ public class SupabaseAuthService {
                             .build();
                 });
         
+        // Only update fields that should change, preserve custom rates
+        boolean needsSave = false;
+        
         // Update email if changed
         if (!user.getEmail().equals(email)) {
             user.setEmail(email);
+            needsSave = true;
         }
         
-        // Set admin role if email matches admin email
-        if (email.equals("admin@frwrd.pro")) {
+        // Set admin role if email matches admin email and role is different
+        if (email.equals("admin@frwrd.pro") && !"ADMIN".equals(user.getRole())) {
             user.setRole("ADMIN");
+            needsSave = true;
         }
         
-        return userRepository.save(user);
+        // Only save if something actually changed or it's a new user
+        if (needsSave || user.getId() == null) {
+            return userRepository.save(user);
+        }
+        
+        return user;
     }
     
     /**

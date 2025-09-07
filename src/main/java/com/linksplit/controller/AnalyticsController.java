@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -35,6 +36,20 @@ public class AnalyticsController {
     private final UserService userService;
     private final LinkRepository linkRepository;
     private final LinkViewRepository linkViewRepository;
+    
+    @ModelAttribute
+    public void addUserInfoToModel(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
+            model.addAttribute("isLoggedIn", true);
+            boolean isAdmin = auth.getAuthorities().stream()
+                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+            model.addAttribute("isAdmin", isAdmin);
+        } else {
+            model.addAttribute("isLoggedIn", false);
+            model.addAttribute("isAdmin", false);
+        }
+    }
     
     @GetMapping("/analytics")
     public String showAnalytics(Model model, Authentication authentication,

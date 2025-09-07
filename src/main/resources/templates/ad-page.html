@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4218848464680345"
+            crossorigin="anonymous"></script>
     <!-- Heatmap tracking script -->
     <script th:src="@{/js/heatmap-tracker.js}"></script>
     <style>
@@ -23,20 +26,24 @@
             border: 1px solid #dee2e6;
             border-radius: 8px;
             padding: 20px;
-            min-width: 320px;
-            min-height: 250px;
+            min-width: 336px;
+            min-height: 280px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .adsbygoogle {
+            width: 100%;
+            height: auto;
+            min-height: 250px;
         }
         .countdown-timer {
             font-size: 24px;
             font-weight: bold;
             color: #6c757d;
-        }
-        #skipButton {
-            min-width: 200px;
         }
     </style>
 </head>
@@ -53,30 +60,22 @@
             </div>
             
             <div class="ad-unit">
-                <div class="text-muted">
-                    <!-- Google AdSense Ad Unit would go here -->
-                    <p>[Advertisement Space]</p>
-                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                    <!-- Replace with actual AdSense code -->
-                    <ins class="adsbygoogle"
-                         style="display:block"
-                         data-ad-client="ca-pub-XXXXXXXXXX"
-                         data-ad-slot="XXXXXXXXXX"
-                         data-ad-format="auto"
-                         data-full-width-responsive="true"></ins>
-                    <script>
-                         (adsbygoogle = window.adsbygoogle || []).push({});
-                    </script>
-                </div>
+                <!-- Vertical Display ad 1 -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-4218848464680345"
+                     data-ad-slot="4788893179"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
             </div>
             
             <div class="mb-3">
                 <p class="countdown-timer" id="countdownText">Please wait <span id="countdown" th:text="${countdownSeconds}">5</span> seconds...</p>
             </div>
             
-            <button id="skipButton" class="btn btn-primary btn-lg" disabled>
-                Skip Ad
-            </button>
             
             <div class="mt-4">
                 <small class="text-muted">
@@ -99,7 +98,6 @@
         let isPaused = false;
         
         const countdownElement = document.getElementById('countdown');
-        const skipButton = document.getElementById('skipButton');
         
         // Page Visibility API - pause timer when page is hidden
         function handleVisibilityChange() {
@@ -127,18 +125,14 @@
                 
                 if (remainingSeconds <= 0) {
                     clearInterval(countdownInterval);
-                    document.getElementById('countdownText').innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i>Redirecting to your destination...';
-                    skipButton.disabled = false;
-                    skipButton.textContent = 'Redirecting...';
-                    skipButton.classList.remove('btn-primary');
-                    skipButton.classList.add('btn-success');
+                    document.getElementById('countdownText').innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i>Redirecting...';
                     adCompleted = true;
                     console.log('Ad completed');
                     
                     // Automatically redirect after ad completion
                     setTimeout(async () => {
                         await completeAdAndRedirect();
-                    }, 500); // Small delay to show the button change
+                    }, 500); // Small delay to show the redirecting message
                 }
             }, 1000);
         }
@@ -182,12 +176,6 @@
         // Start the countdown initially
         startCountdown();
         
-        // Handle manual skip button click
-        skipButton.addEventListener('click', async () => {
-            if (!skipButton.disabled) {
-                await completeAdAndRedirect();
-            }
-        });
         
         // Initialize heatmap tracking
         if (typeof HeatmapTracker !== 'undefined') {

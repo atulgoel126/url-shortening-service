@@ -13,4 +13,5 @@ public class LinkPerformance {
     private Long views;
     private BigDecimal earnings;
     private Double completionRate;
+    private Boolean deleted;
 }

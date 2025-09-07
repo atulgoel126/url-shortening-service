@@ -30,10 +30,11 @@ public class AuthController {
     }
     
     @GetMapping("/register")
-    public String showRegisterPage(Authentication authentication) {
+    public String showRegisterPage(Authentication authentication, @RequestParam(required = false) String referrerId, Model model) {
         if (authentication != null && authentication.isAuthenticated()) {
             return "redirect:/dashboard";
         }
+        model.addAttribute("referrerId", referrerId);
         return "auth/register";
     }
     

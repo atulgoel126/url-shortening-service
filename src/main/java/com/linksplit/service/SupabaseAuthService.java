@@ -1,7 +1,9 @@
 package com.linksplit.service;
 
 import com.linksplit.config.SupabaseConfig;
+import com.linksplit.entity.Referrer;
 import com.linksplit.entity.User;
+import com.linksplit.repository.ReferrerRepository;
 import com.linksplit.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -30,6 +32,7 @@ public class SupabaseAuthService {
     
     private final SupabaseConfig supabaseConfig;
     private final UserRepository userRepository;
+    private final ReferrerRepository referrerRepository;
     
     // JWT Cache to avoid repeated validations
     private final Map<String, Claims> jwtCache = new ConcurrentHashMap<>();
@@ -111,45 +114,55 @@ public class SupabaseAuthService {
      * Creates or updates a user from Supabase authentication
      */
     @Transactional
-    public User createOrUpdateUser(String supabaseId, String email, Map<String, Object> metadata) {
-        User user = userRepository.findBySupabaseId(supabaseId)
-                .orElseGet(() -> {
-                    // Check if user exists with this email (legacy user)
-                    Optional<User> existingUser = userRepository.findByEmail(email);
-                    if (existingUser.isPresent()) {
-                        User u = existingUser.get();
-                        u.setSupabaseId(supabaseId);
-                        return u;
-                    }
-                    // Create new user - only for truly new users
-                    return User.builder()
-                            .supabaseId(supabaseId)
-                            .email(email)
-                            .role("USER")
-                            .build();
-                });
-        
-        // Only update fields that should change, preserve custom rates
-        boolean needsSave = false;
-        
-        // Update email if changed
-        if (!user.getEmail().equals(email)) {
-            user.setEmail(email);
-            needsSave = true;
+    public User createOrUpdateUser(String supabaseId, String email, Map<String, Object> metadata, String referrerId) {
+        // 1. Check for user by Supabase ID
+        Optional<User> userBySupabaseId = userRepository.findBySupabaseId(supabaseId);
+        if (userBySupabaseId.isPresent()) {
+            User user = userBySupabaseId.get();
+            boolean needsSave = false;
+            if (!user.getEmail().equals(email)) {
+                user.setEmail(email);
+                needsSave = true;
+            }
+            if (email.equals("admin@frwrd.pro") && !"ADMIN".equals(user.getRole())) {
+                user.setRole("ADMIN");
+                needsSave = true;
+            }
+            if (needsSave) {
+                return userRepository.save(user);
+            }
+            return user;
         }
-        
-        // Set admin role if email matches admin email and role is different
-        if (email.equals("admin@frwrd.pro") && !"ADMIN".equals(user.getRole())) {
-            user.setRole("ADMIN");
-            needsSave = true;
-        }
-        
-        // Only save if something actually changed or it's a new user
-        if (needsSave || user.getId() == null) {
+
+        // 2. Check for user by email
+        Optional<User> userByEmail = userRepository.findByEmail(email);
+        if (userByEmail.isPresent()) {
+            // User exists, but not linked to Supabase ID. Link them.
+            User user = userByEmail.get();
+            user.setSupabaseId(supabaseId);
+            // Also check for admin promotion
+            if (email.equals("admin@frwrd.pro") && !"ADMIN".equals(user.getRole())) {
+                user.setRole("ADMIN");
+            }
             return userRepository.save(user);
         }
+
+        // 3. User is completely new. Create them.
+        User newUser = User.builder()
+                .supabaseId(supabaseId)
+                .email(email)
+                .role("USER")
+                .build();
+
+        if (referrerId != null && !referrerId.isEmpty()) {
+            referrerRepository.findByReferrerId(referrerId).ifPresent(newUser::setReferrer);
+        }
         
-        return user;
+        if (email.equals("admin@frwrd.pro")) {
+            newUser.setRole("ADMIN");
+        }
+
+        return userRepository.save(newUser);
     }
     
     /**

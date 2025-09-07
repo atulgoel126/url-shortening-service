@@ -44,8 +44,11 @@ public class SupabaseJwtAuthenticationFilter extends OncePerRequestFilter {
                 String email = claims.get("email", String.class);
                 
                 if (supabaseId != null && email != null) {
+                    // Extract referrerId from request
+                    String referrerId = request.getParameter("referrerId");
+
                     // Create or update user from Supabase
-                    User user = supabaseAuthService.createOrUpdateUser(supabaseId, email, claims);
+                    User user = supabaseAuthService.createOrUpdateUser(supabaseId, email, claims, referrerId);
                     
                     // Create authentication token
                     UserDetails userDetails = supabaseAuthService.createUserDetails(user);

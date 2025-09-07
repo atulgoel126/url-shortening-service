@@ -53,6 +53,10 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Link> links;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "referrer_id")
+    private Referrer referrer;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

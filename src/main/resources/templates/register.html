@@ -17,6 +17,7 @@
                         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
                         
                         <form th:action="@{/register}" th:object="${registerRequest}" method="post">
+                            <input type="hidden" name="referrerId" th:value="${param.referrerId}" />
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email address</label>
                                 <input type="email" class="form-control" id="email" 

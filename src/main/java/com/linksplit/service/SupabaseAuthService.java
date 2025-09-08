@@ -48,7 +48,7 @@ public class SupabaseAuthService {
                 // Check if cached token is still valid (not expired)
                 Date expiration = cachedClaims.getExpiration();
                 if (expiration != null && expiration.after(new Date())) {
-                    log.info("🚀 CACHE HIT: Using cached JWT claims (expires: {})", expiration);
+                    // log.info("🚀 CACHE HIT: Using cached JWT claims (expires: {})", expiration);
                     return Optional.of(cachedClaims);
                 } else {
                     // Remove expired token from cache
@@ -148,6 +148,7 @@ public class SupabaseAuthService {
         }
 
         // 3. User is completely new. Create them.
+        log.info("Creating new user for email: {}", email);
         User newUser = User.builder()
                 .supabaseId(supabaseId)
                 .email(email)
@@ -155,7 +156,11 @@ public class SupabaseAuthService {
                 .build();
 
         if (referrerId != null && !referrerId.isEmpty()) {
-            referrerRepository.findByReferrerId(referrerId).ifPresent(newUser::setReferrer);
+            log.info("Attempting to link referrerId: {}", referrerId);
+            referrerRepository.findByReferrerId(referrerId).ifPresent(referrer -> {
+                newUser.setReferrer(referrer);
+                log.info("Successfully linked referrer: {}", referrer.getReferrerId());
+            });
         }
         
         if (email.equals("admin@frwrd.pro")) {

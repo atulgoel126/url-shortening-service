@@ -205,11 +205,20 @@
             authContainer.style.display = 'none';
             
             try {
+                // Get referrerId from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const referrerId = urlParams.get('referrerId');
+                
+                let redirectTo = '[[${app.baseUrl}]]' + '/auth/callback';
+                if (referrerId) {
+                    redirectTo += '?referrerId=' + encodeURIComponent(referrerId);
+                }
+
                 const { data, error } = await supabaseClient.auth.signUp({
                     email: email,
                     password: password,
                     options: {
-                        emailRedirectTo: window.location.origin + '/auth/callback'
+                        emailRedirectTo: redirectTo
                     }
                 });
                 

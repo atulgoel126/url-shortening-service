@@ -1,5 +1,7 @@
 package com.linksplit.controller;
 
+import com.linksplit.config.AppProperties;
+import com.linksplit.config.SupabaseProperties;
 import com.linksplit.entity.User;
 import com.linksplit.service.SupabaseAuthService;
 import jakarta.servlet.http.Cookie;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     
     private final SupabaseAuthService supabaseAuthService;
+    private final AppProperties appProperties;
+    private final SupabaseProperties supabaseProperties;
     
     @GetMapping("/login")
     public String showLoginPage(Authentication authentication) {
@@ -35,35 +39,25 @@ public class AuthController {
             return "redirect:/dashboard";
         }
         model.addAttribute("referrerId", referrerId);
+        model.addAttribute("app", appProperties);
         return "auth/register";
     }
     
     @GetMapping("/callback")
     public String handleCallback(
-            @RequestParam(required = false) String access_token,
-            @RequestParam(required = false) String refresh_token,
-            HttpServletResponse response) {
+            @RequestParam(required = false) String referrerId,
+            HttpServletRequest request,
+            Model model) {
         
-        if (access_token != null) {
-            // Store access token in cookie
-            Cookie accessCookie = new Cookie("sb-access-token", access_token);
-            accessCookie.setPath("/");
-            accessCookie.setMaxAge(60 * 60 * 24 * 7); // 7 days
-            accessCookie.setHttpOnly(true);
-            response.addCookie(accessCookie);
-            
-            if (refresh_token != null) {
-                Cookie refreshCookie = new Cookie("sb-refresh-token", refresh_token);
-                refreshCookie.setPath("/");
-                refreshCookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
-                refreshCookie.setHttpOnly(true);
-                response.addCookie(refreshCookie);
-            }
-            
-            return "redirect:/dashboard";
+        if (referrerId != null && !referrerId.isEmpty()) {
+            log.info("Referrer ID received in callback: {}", referrerId);
+            request.getSession().setAttribute("referrerId", referrerId);
+        } else {
+            log.info("No Referrer ID in callback.");
         }
         
-        return "redirect:/auth/login";
+        model.addAttribute("supabase", supabaseProperties);
+        return "auth/callback";
     }
     
     @GetMapping("/logout")

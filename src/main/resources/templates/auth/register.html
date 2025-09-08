@@ -156,12 +156,21 @@
                     
                     <div class="form-group-modern" style="margin-bottom: 1.5rem;">
                         <label for="confirmPassword" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Confirm Password</label>
-                        <input type="password" 
-                               id="confirmPassword" 
-                               name="confirmPassword" 
+                        <input type="password"
+                               id="confirmPassword"
+                               name="confirmPassword"
                                required
                                minlength="6"
                                placeholder="Confirm your password"
+                               style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; font-size: 1rem;">
+                    </div>
+
+                    <div class="form-group-modern" style="margin-bottom: 1.5rem;">
+                        <label for="referrerId" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Referral ID (Optional)</label>
+                        <input type="text"
+                               id="referrerId"
+                               name="referrerId"
+                               placeholder="Enter referral ID"
                                style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; font-size: 1rem;">
                     </div>
                     
@@ -209,16 +218,14 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const referrerId = urlParams.get('referrerId');
                 
-                let redirectTo = '[[${app.baseUrl}]]' + '/auth/callback';
-                if (referrerId) {
-                    redirectTo += '?referrerId=' + encodeURIComponent(referrerId);
-                }
-
                 const { data, error } = await supabaseClient.auth.signUp({
                     email: email,
                     password: password,
                     options: {
-                        emailRedirectTo: redirectTo
+                        data: {
+                            referrer_id: referrerId
+                        },
+                        emailRedirectTo: window.location.origin + '/auth/callback'
                     }
                 });
                 

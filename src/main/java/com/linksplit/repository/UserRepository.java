@@ -25,4 +25,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
            "GROUP BY u " +
            "ORDER BY totalEarnings DESC")
     List<Object[]> findTopCreatorsByEarnings(Pageable pageable);
+
+    @Query("SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.links WHERE u IN :users")
+    List<User> findWithLinks(List<User> users);
 }

@@ -1,7 +1,5 @@
 package com.linksplit.controller;
 
-import com.linksplit.config.AppProperties;
-import com.linksplit.config.SupabaseProperties;
 import com.linksplit.entity.User;
 import com.linksplit.service.SupabaseAuthService;
 import jakarta.servlet.http.Cookie;
@@ -22,8 +20,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     
     private final SupabaseAuthService supabaseAuthService;
-    private final AppProperties appProperties;
-    private final SupabaseProperties supabaseProperties;
     
     @GetMapping("/login")
     public String showLoginPage(Authentication authentication) {
@@ -39,25 +35,15 @@ public class AuthController {
             return "redirect:/dashboard";
         }
         model.addAttribute("referrerId", referrerId);
-        model.addAttribute("app", appProperties);
         return "auth/register";
     }
     
     @GetMapping("/callback")
-    public String handleCallback(
-            @RequestParam(required = false) String referrerId,
-            HttpServletRequest request,
-            Model model) {
-        
-        if (referrerId != null && !referrerId.isEmpty()) {
-            log.info("Referrer ID received in callback: {}", referrerId);
-            request.getSession().setAttribute("referrerId", referrerId);
-        } else {
-            log.info("No Referrer ID in callback.");
-        }
-        
-        model.addAttribute("supabase", supabaseProperties);
-        return "auth/callback";
+    public String handleCallback() {
+        // This endpoint is the redirect target from Supabase.
+        // The Supabase client-side JS will handle the token from the URL fragment.
+        // We just need to redirect to a page where that script can run.
+        return "redirect:/dashboard";
     }
     
     @GetMapping("/logout")

@@ -114,7 +114,7 @@ public class SupabaseAuthService {
      * Creates or updates a user from Supabase authentication
      */
     @Transactional
-    public User createOrUpdateUser(String supabaseId, String email, Map<String, Object> metadata, String referrerId) {
+    public User createOrUpdateUser(String supabaseId, String email, String referrerId) {
         // 1. Check for user by Supabase ID
         Optional<User> userBySupabaseId = userRepository.findBySupabaseId(supabaseId);
         if (userBySupabaseId.isPresent()) {

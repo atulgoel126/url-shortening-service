@@ -15,6 +15,6 @@ public interface ReferrerRepository extends JpaRepository<Referrer, Long> {
     @Query("SELECT DISTINCT r FROM Referrer r LEFT JOIN FETCH r.users")
     List<Referrer> findAllWithUsers();
 
-    @Query("SELECT r FROM Referrer r LEFT JOIN FETCH r.users WHERE r.id = :id")
+    @Query("SELECT r FROM Referrer r LEFT JOIN FETCH r.users u LEFT JOIN FETCH u.links WHERE r.id = :id")
     Optional<Referrer> findByIdWithUsers(Long id);
 }
